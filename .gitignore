@@ -2,3 +2,7 @@
 Thumbs.db
 *.log
 node_modules/
+
+# Template de referência (admin/backend de outro projeto seu) — fica só no
+# seu disco, nunca no repositório público da Jeh Corrêa.
+template-admin-backend/

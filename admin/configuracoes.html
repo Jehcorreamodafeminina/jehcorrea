@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurações — Jeh Corrêa</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --gold:#7C5C35; --gold-mid:#A07848; --gold-light:#C4A47A;
+  --gold-pale:#E0CEBB; --cream:#F5F0EA; --cream-d:#EDE4DA;
+  --brown:#3D2B1A; --brown-m:#5C3D28; --text:#2A1F14;
+  --text-m:#5A4030; --text-s:#9C8070; --white:#FEFCF9;
+  --sidebar:240px; --green:#2D6A4F; --green-l:#E8F5F0;
+  --red:#C53030; --red-l:#FFF5F5;
+}
+body { font-family:'Jost',sans-serif; background:var(--cream); color:var(--text); display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar { width:var(--sidebar); background:var(--brown); min-height:100vh; position:fixed; top:0; left:0; display:flex; flex-direction:column; z-index:100; transition:transform 0.3s ease; }
+.sidebar-logo { padding:1.8rem 1.5rem; border-bottom:1px solid rgba(196,164,122,0.15); display:flex; align-items:center; justify-content:space-between; }
+.sidebar-logo .brand { font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-weight:300; letter-spacing:0.25em; color:var(--gold-light); text-transform:uppercase; display:block; }
+.sidebar-logo .tag { font-size:0.52rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.25); margin-top:0.2rem; display:block; }
+.sidebar-nav { flex:1; padding:1rem 0; overflow-y:auto; }
+.nav-section-title { font-size:0.5rem; letter-spacing:0.35em; text-transform:uppercase; color:rgba(255,255,255,0.2); padding:0.8rem 1.5rem 0.4rem; }
+.nav-item { display:flex; align-items:center; gap:0.8rem; padding:0.75rem 1.5rem; font-size:0.72rem; letter-spacing:0.08em; color:rgba(255,255,255,0.5); cursor:pointer; transition:all 0.2s; text-decoration:none; border-left:2px solid transparent; }
+.nav-item:hover { color:var(--gold-light); background:rgba(255,255,255,0.03); }
+.nav-item.active { color:var(--gold-light); background:rgba(196,164,122,0.08); border-left-color:var(--gold); }
+.nav-item .icon { font-size:1rem; flex-shrink:0; }
+.sidebar-footer { padding:1.2rem 1.5rem; border-top:1px solid rgba(196,164,122,0.12); }
+.user-info { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.8rem; }
+.user-avatar { width:34px; height:34px; border-radius:50%; background:var(--gold); display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:0.9rem; color:var(--white); font-style:italic; flex-shrink:0; }
+.user-name { font-size:0.72rem; color:var(--gold-light); }
+.user-email { font-size:0.58rem; color:rgba(255,255,255,0.25); margin-top:0.1rem; }
+.btn-logout { width:100%; padding:0.55rem; background:rgba(255,255,255,0.05); border:1px solid rgba(196,164,122,0.15); color:rgba(255,255,255,0.4); font-family:'Jost',sans-serif; font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.btn-logout:hover { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); }
+
+/* ── MAIN ── */
+.main { margin-left:var(--sidebar); flex:1; transition:margin-left 0.3s ease; }
+body.sidebar-collapsed .sidebar { transform:translateX(-100%); }
+body.sidebar-collapsed .main { margin-left:0; }
+.topbar { background:var(--white); border-bottom:1px solid var(--gold-pale); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+.topbar-title { font-family:'Cormorant Garamond',serif; font-size:1.4rem; font-weight:300; color:var(--brown); }
+.content { padding:2rem; }
+
+/* ── CARDS ── */
+.config-card { background:var(--white); border:1px solid var(--gold-pale); border-radius:10px; margin-bottom:1.5rem; overflow:hidden; }
+.config-card-header { padding:1.2rem 1.5rem; border-bottom:1px solid var(--gold-pale); display:flex; align-items:center; gap:0.75rem; cursor:pointer; user-select:none; }
+.config-card-header h2 { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:400; color:var(--brown); flex:1; }
+.config-card-header .icon { font-size:1.1rem; }
+.config-card-header .chevron { font-size:0.7rem; color:var(--text-s); transition:transform 0.2s; }
+.config-card.collapsed .config-card-header { border-bottom:none; }
+.config-card.collapsed .config-card-header .chevron { transform:rotate(-90deg); }
+.config-card.collapsed .config-card-body { display:none; }
+.config-card-body { padding:1.5rem; }
+
+/* ── FORM ── */
+.form-group { margin-bottom:1.1rem; }
+.form-group label { display:block; font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-s); margin-bottom:0.4rem; }
+.form-group input, .form-group textarea { width:100%; padding:0.7rem 0.9rem; border:1px solid var(--gold-pale); border-radius:7px; font-family:'Jost',sans-serif; font-size:0.88rem; color:var(--text); background:var(--cream); outline:none; transition:border 0.2s; }
+.form-group input:focus, .form-group textarea:focus { border-color:var(--gold); background:var(--white); }
+.form-group textarea { resize:vertical; min-height:80px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+@media(max-width:600px){ .form-row { grid-template-columns:1fr; } .content { padding:1rem; } }
+
+/* ── IMAGE UPLOAD ── */
+.img-upload-area { border:1.5px dashed var(--gold-pale); border-radius:8px; padding:1.2rem; text-align:center; cursor:pointer; transition:border-color 0.2s; background:var(--cream); position:relative; }
+.img-upload-area:hover { border-color:var(--gold-light); }
+.img-upload-area input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.img-upload-area .upload-icon { font-size:1.5rem; margin-bottom:0.4rem; }
+.img-upload-area p { font-size:0.75rem; color:var(--text-s); }
+.img-upload-area .img-preview { width:100%; max-height:160px; object-fit:cover; border-radius:6px; margin-top:0.5rem; display:none; }
+
+/* ── REPOSICIONAR FOTO (arrastar dentro da moldura) ── */
+.reposition-wrap { margin-top:0.6rem; display:none; }
+.reposition-wrap.active { display:block; }
+.reposition-frame {
+  position:relative; overflow:hidden; border-radius:6px;
+  border:1px solid var(--gold-pale);
+  cursor:grab; touch-action:none; background:var(--cream-d);
+}
+.reposition-frame.dragging { cursor:grabbing; }
+.reposition-frame img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; transform-origin:center center; user-select:none; pointer-events:none; }
+.reposition-controls { display:flex; flex-direction:column; align-items:flex-start; gap:0.4rem; margin-top:0.55rem; }
+.reposition-hint { font-size:0.62rem; color:var(--text-s); letter-spacing:0.02em; line-height:1.4; }
+.btn-reposition-reset { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; border:1px solid var(--gold-pale); background:var(--white); color:var(--text-m); cursor:pointer; border-radius:4px; white-space:nowrap; align-self:flex-end; }
+.btn-reposition-reset:hover { border-color:var(--gold); color:var(--gold); }
+.reposition-zoom-btns { position:absolute; bottom:0.4rem; right:0.4rem; display:flex; gap:0.3rem; z-index:2; }
+.reposition-zoom-btn {
+  width:26px; height:26px; border-radius:50%; border:none;
+  background:rgba(61,43,26,0.75); color:#fff; font-size:0.95rem; font-weight:600;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  line-height:1; padding:0; backdrop-filter:blur(2px); transition:background 0.15s;
+}
+.reposition-zoom-btn:hover { background:rgba(61,43,26,0.92); }
+
+/* ── SELO "EM USO" / "SÓ NO ESTILO X" ── */
+.usage-badge { display:inline-flex; align-items:center; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; font-weight:600; padding:0.2rem 0.55rem; border-radius:20px; white-space:nowrap; }
+.usage-badge:empty { display:none; }
+.usage-badge.usage-active { background:var(--green-l); color:var(--green); }
+.usage-badge.usage-inactive { background:var(--cream-d); color:var(--text-s); font-weight:400; text-transform:none; letter-spacing:0.01em; }
+
+/* ── DESTAQUE BOXES ── */
+.boxes-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+@media(max-width:700px){ .boxes-grid { grid-template-columns:1fr; } }
+
+.herob-photos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem; }
+@media(max-width:700px){ .herob-photos-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:480px){ .herob-photos-grid { grid-template-columns:1fr; } }
+
+.cat-photos-grid { grid-template-columns:repeat(5,1fr) !important; }
+@media(max-width:900px){ .cat-photos-grid { grid-template-columns:repeat(3,1fr) !important; } }
+@media(max-width:480px){ .cat-photos-grid { grid-template-columns:repeat(2,1fr) !important; } }
+.box-item { border:1px solid var(--gold-pale); border-radius:8px; padding:1rem; background:var(--cream); }
+.box-item h4 { font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-s); margin-bottom:0.75rem; }
+
+/* ── BUTTONS ── */
+.btn-save { display:inline-flex; align-items:center; gap:0.4rem; padding:0.75rem 1.5rem; background:var(--gold); color:var(--white); border:none; border-radius:7px; font-family:'Jost',sans-serif; font-size:0.78rem; letter-spacing:0.08em; cursor:pointer; transition:background 0.2s; }
+.btn-save:hover { background:var(--brown-m); }
+.btn-save:disabled { opacity:0.6; cursor:not-allowed; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:2rem; right:2rem; padding:0.9rem 1.3rem; border-radius:8px; font-size:0.82rem; display:flex; align-items:center; gap:0.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.12); z-index:9999; transform:translateY(4rem); opacity:0; transition:all 0.3s; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.ok { background:var(--green-l); color:var(--green); border:1px solid #a3d4bc; }
+.toast.err { background:var(--red-l); color:var(--red); border:1px solid #fed7d7; }
+
+/* ── SPINNER ── */
+.spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── LAYOUT 2 COLUNAS + PREVIEW ── */
+.content-layout { display:grid; grid-template-columns:minmax(0,1fr) 460px; gap:2.5rem; align-items:start; max-width:1560px; margin:0 auto; }
+.cards-col { max-width:1000px; }
+.preview-pane { position:sticky; top:1.5rem; }
+.preview-pane-inner { background:var(--white); border:1px solid var(--gold-pale); border-radius:10px; overflow:hidden; box-shadow:0 4px 24px rgba(61,43,26,0.06); }
+.preview-select { padding:0.8rem 1rem; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-s); border-bottom:1px solid var(--gold-pale); display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
+.preview-select strong { color:var(--brown); font-weight:500; }
+.preview-hint { padding:0.6rem 1rem; font-size:0.68rem; color:var(--text-s); background:var(--cream); border-bottom:1px solid var(--gold-pale); line-height:1.5; }
+.browser-chrome-bar { background:var(--cream-d); padding:0.55rem 0.8rem; display:flex; align-items:center; gap:0.35rem; border-bottom:1px solid var(--gold-pale); }
+.chrome-dot { width:8px; height:8px; border-radius:50%; background:var(--gold-pale); flex-shrink:0; }
+.chrome-url { margin-left:0.5rem; font-size:0.65rem; color:var(--text-s); background:var(--white); padding:0.25rem 0.7rem; border-radius:20px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; border:1px solid var(--gold-pale); }
+#preview-iframe { width:100%; height:calc(100vh - 280px); min-height:420px; border:none; display:block; background:var(--cream); }
+.preview-open-link { display:block; text-align:center; padding:0.7rem; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); text-decoration:none; border-top:1px solid var(--gold-pale); transition:background 0.2s; }
+.preview-open-link:hover { background:var(--cream); }
+@media(max-width:1150px) and (min-width:901px){
+  .content-layout { grid-template-columns:minmax(0,1fr) minmax(280px,340px); gap:1.5rem; }
+  .cards-col { max-width:none; }
+  #preview-iframe { height:55vh; min-height:360px; }
+}
+@media(max-width:900px){
+  .content-layout { grid-template-columns:1fr; }
+  .preview-pane { position:static; margin-top:2rem; }
+  .cards-col { max-width:none; }
+  #preview-iframe { height:60vh; min-height:320px; }
+}
+
+.sidebar-toggle-btn { display:flex; width:34px; height:34px; border:none; background:none; color:var(--brown); font-size:1.2rem; cursor:pointer; align-items:center; justify-content:center; }
+.sidebar-collapse-btn { display:flex; width:28px; height:28px; border:none; background:rgba(255,255,255,0.1); color:var(--gold-light); border-radius:50%; align-items:center; justify-content:center; cursor:pointer; font-size:0.85rem; }
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(42,31,20,0.45); z-index:99; }
+
+@media(max-width:1024px) {
+  .sidebar { transform:translateX(-100%); }
+  body.sidebar-mobile-open .sidebar { transform:translateX(0); }
+  .main { margin-left:0; }
+  body.sidebar-mobile-open .sidebar-overlay { display:block; }
+}
+
+/* ── SUBSEÇÕES DENTRO DE UM CARD (ex: Seções da Home) ── */
+.subsection { padding:1rem 0; border-top:1px dashed var(--gold-pale); }
+.subsection:first-child { padding-top:0; border-top:none; }
+.subsection-title { font-family:'Cormorant Garamond',serif; font-size:0.95rem; font-weight:500; color:var(--gold); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem; }
+
+/* ── EDIÇÃO NO ESTILO "A PÁGINA DE VERDADE, COM LAPISINHO" (Sobre + Hero) ── */
+.page-mock .mock-hint { font-size:0.72rem; color:var(--text-s); margin-bottom:1.5rem; }
+.page-mock .mock-block { padding:1.4rem 0; border-top:1px dashed var(--gold-pale); }
+.page-mock .mock-block:first-of-type { padding-top:0; border-top:none; }
+.page-mock .mock-tag { font-size:0.62rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--gold); font-weight:500; margin-bottom:0.5rem; width:auto; min-width:8ch; }
+.page-mock .mock-heading { font-family:'Cormorant Garamond',serif; font-size:1.55rem; font-weight:400; line-height:1.3; color:var(--brown); margin-bottom:0.6rem; }
+.page-mock .mock-heading-inline { display:flex; flex-wrap:wrap; align-items:baseline; gap:0.3em; }
+.page-mock .mock-gold { font-style:italic; color:var(--gold); }
+.page-mock .mock-body { font-size:0.85rem; line-height:1.75; color:var(--text-m); }
+.page-mock .mock-num { font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--gold); text-align:center; }
+.page-mock .mock-label { font-size:0.68rem; color:var(--text-s); text-align:center; }
+.page-mock .mock-quote { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.95rem; color:var(--brown-m); }
+.page-mock .mock-sig-nome { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--brown); }
+.page-mock .mock-sig-cargo { font-size:0.65rem; color:var(--text-s); }
+.page-mock .mock-hist-signature { display:flex; gap:0.75rem; align-items:baseline; margin-top:0.6rem; }
+.page-mock .mock-hist-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:1.5rem; align-items:start; }
+@media(max-width:900px){ .page-mock .mock-hist-grid { grid-template-columns:1fr; } }
+.page-mock .mock-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:0.75rem; margin-top:0.5rem; }
+.page-mock .mock-card { border:1px solid var(--gold-pale); border-radius:8px; padding:0.9rem; background:var(--cream); }
+.page-mock .mock-stat { text-align:center; }
+.page-mock .mock-card-head { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem; }
+.page-mock .mock-card-title { font-weight:500; font-size:0.82rem; color:var(--brown); }
+.page-mock .mock-card-desc { font-size:0.75rem; line-height:1.6; color:var(--text-m); min-height:60px; }
+.page-mock .mock-toggle-row { display:flex; align-items:center; gap:0.6rem; padding:0.7rem 0.9rem; background:var(--cream); border:1px solid var(--gold-pale); border-radius:8px; margin:0.9rem 0; cursor:pointer; }
+.page-mock .mock-toggle-row input[type="checkbox"] { width:20px; height:20px; accent-color:var(--gold); flex-shrink:0; }
+.page-mock .mock-toggle-row span { font-size:0.78rem; color:var(--text-m); }
+.page-mock .mock-alt-phrase { display:none; padding:0.9rem 1rem; border:1px dashed var(--gold-light); border-radius:8px; margin-bottom:0.9rem; background:rgba(196,164,122,0.05); }
+.page-mock .mock-alt-phrase.is-open { display:block; }
+
+/* Campos de texto "de verdade" com lapisinho — tocável no iPad, não depende
+   de :hover pra aparecer (ela edita principalmente no iPad). */
+.ed { position:relative; }
+.ed-field { all:unset; display:block; width:100%; box-sizing:border-box; font:inherit; color:inherit; padding:0.2rem 1.9rem 0.2rem 0.3rem; border-radius:5px; cursor:text; }
+.ed-field.ed-inline { display:inline-block; width:auto; min-width:2ch; }
+.ed-icon-field { all:unset; width:2.4em; text-align:center; font-size:1.15rem; cursor:text; border-radius:5px; padding:0.15rem; flex-shrink:0; }
+.ed-field:hover, .ed-icon-field:hover { background:rgba(196,164,122,0.12); }
+.ed-field:focus, .ed-icon-field:focus { background:var(--white); box-shadow:0 0 0 2px var(--gold-light); }
+textarea.ed-field { min-height:150px; resize:vertical; line-height:1.75; white-space:pre-wrap; }
+.ed-inline-wrap { position:relative; display:inline-flex; align-items:center; }
+.ed-pencil { position:absolute; right:0; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:rgba(124,92,53,0.12); color:var(--gold); border-radius:50%; font-size:0.7rem; line-height:1; cursor:pointer; opacity:0.6; transition:opacity 0.15s, background 0.15s; display:flex; align-items:center; justify-content:center; }
+.ed-inline-wrap .ed-pencil { position:static; transform:none; margin-left:0.3rem; flex-shrink:0; }
+.ed:hover .ed-pencil, .ed-inline-wrap:hover .ed-pencil, .ed-pencil:active, .ed-field:focus + .ed-pencil { opacity:1; background:rgba(124,92,53,0.2); }
+.ed-toolbar { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem; }
+.ed-tool-btn { border:1px solid var(--gold-pale); background:var(--white); color:var(--brown); width:30px; height:30px; border-radius:5px; font-size:0.75rem; cursor:pointer; }
+.ed-tool-btn:hover { background:var(--cream-d); }
+.ed-toolbar-hint { font-size:0.65rem; color:var(--text-s); }
+
+/* ── ESCOLHA DO ESTILO DO BANNER — cartões grandes, bons de tocar no iPad ── */
+.banner-style-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.75rem; margin-top:0.5rem; }
+.banner-style-card { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:0.3rem; min-height:112px; padding:1.1rem 0.8rem; border:2px solid var(--gold-pale); border-radius:10px; background:var(--cream); cursor:pointer; transition:border-color 0.15s, background 0.15s, box-shadow 0.15s; }
+.banner-style-card input[type="radio"] { position:absolute; opacity:0; pointer-events:none; }
+.banner-style-card .bsc-icon { font-size:1.7rem; }
+.banner-style-card .bsc-name { font-family:'Cormorant Garamond',serif; font-size:1.05rem; color:var(--brown); }
+.banner-style-card .bsc-desc { font-size:0.68rem; color:var(--text-s); line-height:1.4; }
+.banner-style-card .bsc-check { font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--green); font-weight:600; margin-top:0.1rem; visibility:hidden; }
+.banner-style-card:hover { border-color:var(--gold-light); }
+.banner-style-card:has(input:checked) { border-color:var(--gold); background:var(--white); box-shadow:0 0 0 1px var(--gold) inset, 0 4px 14px -6px rgba(124,92,53,0.35); }
+.banner-style-card:has(input:checked) .bsc-check { visibility:visible; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div>
+      <span class="brand">Jeh Corrêa</span>
+      <span class="tag">Painel Admin</span>
+    </div>
+    <button type="button" class="sidebar-collapse-btn" onclick="closeSidebar()" aria-label="Recolher menu" title="Recolher menu">‹</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Principal</div>
+    <a class="nav-item" href="/admin/dashboard"><span class="icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="/admin/produto"><span class="icon">✦</span> Novo Produto</a>
+    <div class="nav-section-title" style="margin-top:0.5rem;">Gestão</div>
+    <a class="nav-item" href="dashboard.html"><span class="icon">💍</span> Produtos</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon">📦</span> Pedidos</a>
+    <a class="nav-item" href="cupons.html"><span class="icon">🏷️</span> Cupons</a>
+    <a class="nav-item" href="blog.html"><span class="icon">📝</span> Blog</a>
+    <a class="nav-item" href="dashboard.html"><span class="icon">👤</span> Clientes</a>
+    <div class="nav-section-title" style="margin-top:0.5rem;">Configurações</div>
+    <a class="nav-item" href="../index.html" target="_blank"><span class="icon">🌐</span> Ver loja</a>
+    <a class="nav-item active" href="configuracoes.html"><span class="icon">⚙</span> Configurações</a>
+    <a class="nav-item" href="#" onclick="AdminTour.open();return false;"><span class="icon">🧭</span> Ajuda</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">E</div>
+      <div>
+        <div class="user-name">Jeh Corrêa</div>
+        <div class="user-email" id="user-email-display">—</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button type="button" class="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menu" title="Abrir menu">☰</button>
+      <div class="topbar-title">Configurações da Loja</div>
+    </div>
+    <button class="btn-save" onclick="salvarTudo()" id="btn-salvar" disabled>
+      <span id="btn-txt">Carregando dados...</span>
+    </button>
+  </div>
+
+  <div class="content">
+  <div class="content-layout">
+  <div class="cards-col">
+
+    <!-- HERO -->
+    <div class="config-card" data-preview-target="#hero-editorial">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">🖼️</span>
+        <h2>Banner Principal (Hero)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+
+        <div class="form-group">
+          <label>1. Escolha o estilo do banner</label>
+          <div class="banner-style-grid">
+            <label class="banner-style-card">
+              <input type="radio" name="hero-estilo" id="hero-estilo-editorial" value="editorial" />
+              <span class="bsc-icon">🖼️</span>
+              <span class="bsc-name">Editorial</span>
+              <span class="bsc-desc">Mosaico de fotos ao lado</span>
+              <span class="bsc-check">✓ Em uso</span>
+            </label>
+            <label class="banner-style-card">
+              <input type="radio" name="hero-estilo" id="hero-estilo-fullscreen" value="fullscreen" />
+              <span class="bsc-icon">🎞️</span>
+              <span class="bsc-name">Fullscreen</span>
+              <span class="bsc-desc">3 fotos em slideshow</span>
+              <span class="bsc-check">✓ Em uso</span>
+            </label>
+            <label class="banner-style-card">
+              <input type="radio" name="hero-estilo" id="hero-estilo-foto" value="foto" />
+              <span class="bsc-icon">📷</span>
+              <span class="bsc-name">Foto Cheia</span>
+              <span class="bsc-desc">Foto de fundo com texto por cima</span>
+              <span class="bsc-check">✓ Em uso</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:1.5rem;">
+          <label>2. Texto do banner (vale para os 3 estilos)</label>
+          <div class="page-mock">
+            <div class="mock-block" style="padding-top:0.9rem;">
+              <span class="ed-inline-wrap"><input type="text" id="hero-label" class="ed-field mock-tag ed-inline" placeholder="Nova Coleção · Primavera 2025" /><button type="button" class="ed-pencil">✎</button></span>
+              <div class="mock-heading">
+                <div class="ed"><input type="text" id="hero-titulo1" class="ed-field" placeholder="Para" /><button type="button" class="ed-pencil">✎</button></div>
+                <div class="ed"><input type="text" id="hero-titulo2" class="ed-field mock-gold" placeholder="mulheres únicas" /><button type="button" class="ed-pencil">✎</button></div>
+              </div>
+              <div class="ed"><textarea id="hero-subtitulo" class="ed-field mock-body" style="min-height:70px;" placeholder="Peças exclusivas, feitas de forma unitária com pedras selecionadas..."></textarea><button type="button" class="ed-pencil">✎</button></div>
+              <span class="ed-inline-wrap" style="margin-top:0.6rem;"><input type="text" id="hero-btn" class="ed-field mock-tag ed-inline" style="color:var(--brown-m);" placeholder="Ver Coleção" /><button type="button" class="ed-pencil">✎</button></span>
+
+              <label class="mock-toggle-row">
+                <input type="checkbox" id="hero-titulo-rotativo" />
+                <span>Alternar com uma segunda frase no título (troca a cada ~4 segundos)</span>
+              </label>
+              <div class="mock-alt-phrase" id="hero-alt-phrase-block">
+                <div class="mock-heading" style="margin-bottom:0;">
+                  <div class="ed"><input type="text" id="hero-titulo1b" class="ed-field" placeholder="Elegância | Exclusividade" /><button type="button" class="ed-pencil">✎</button></div>
+                  <div class="ed"><input type="text" id="hero-titulo2b" class="ed-field mock-gold" placeholder="Atemporalidade" /><button type="button" class="ed-pencil">✎</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:0.5rem;">
+          <label>3. Fotos do banner</label>
+        </div>
+        <div class="form-group" data-usage-for="editorial">
+          <label style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">Imagem principal (foto grande da direita) <span class="usage-badge" data-usage-for="editorial"></span></label>
+          <div class="img-upload-area" id="area-hero">
+            <input type="file" accept="image/*" onchange="previewImg(this,'prev-hero','area-hero','hero-img-url'); initReposition('hero')" />
+            <div class="upload-icon">📷</div>
+            <p>Clique para escolher a foto<br><small>Recomendado: 800×1000px</small></p>
+            <img id="prev-hero" class="img-preview" />
+          </div>
+          <input type="hidden" id="hero-img-url" />
+          <input type="hidden" id="hero-img-posx" value="50">
+          <input type="hidden" id="hero-img-posy" value="50">
+          <input type="hidden" id="hero-img-zoom" value="100">
+          <div class="reposition-wrap" id="reposition-wrap-hero">
+            <div class="reposition-frame" id="reposition-frame-hero" style="aspect-ratio:4/5;max-width:220px;">
+              <img id="reposition-img-hero" alt="">
+              <div class="reposition-zoom-btns">
+                <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('hero', -10)">−</button>
+                <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('hero', 10)">+</button>
+              </div>
+            </div>
+            <div class="reposition-controls">
+              <span class="reposition-hint">↔ Arraste a foto e use o zoom para ajustar o enquadramento</span>
+              <button type="button" class="btn-reposition-reset" onclick="resetReposition('hero')">Centralizar</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" data-usage-for="editorial">
+          <label style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">Imagem principal — versão celular (opcional) <span class="usage-badge" data-usage-for="editorial"></span></label>
+          <p style="font-size:0.68rem;color:var(--text-s);margin-bottom:0.5rem;">Se o enquadramento da foto acima ficar cortado no celular, envie aqui uma versão própria para telas pequenas. Se deixar em branco, o celular usa a mesma foto de cima.</p>
+          <div class="img-upload-area" id="area-hero-mobile">
+            <input type="file" accept="image/*" onchange="previewImg(this,'prev-hero-mobile','area-hero-mobile','hero-img-mobile-url'); initReposition('hero-mobile')" />
+            <div class="upload-icon">📷</div>
+            <p>Clique para escolher a foto<br><small>Recomendado: vertical, 600×900px</small></p>
+            <img id="prev-hero-mobile" class="img-preview" />
+          </div>
+          <input type="hidden" id="hero-img-mobile-url" />
+          <input type="hidden" id="hero-mobile-img-posx" value="50">
+          <input type="hidden" id="hero-mobile-img-posy" value="50">
+          <input type="hidden" id="hero-mobile-img-zoom" value="100">
+          <div class="reposition-wrap" id="reposition-wrap-hero-mobile">
+            <div class="reposition-frame" id="reposition-frame-hero-mobile" style="aspect-ratio:4/5;max-width:220px;">
+              <img id="reposition-img-hero-mobile" alt="">
+              <div class="reposition-zoom-btns">
+                <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('hero-mobile', -10)">−</button>
+                <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('hero-mobile', 10)">+</button>
+              </div>
+            </div>
+            <div class="reposition-controls">
+              <span class="reposition-hint">↔ Arraste a foto e use o zoom para ajustar o enquadramento</span>
+              <button type="button" class="btn-reposition-reset" onclick="resetReposition('hero-mobile')">Centralizar</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" data-usage-for="foto">
+          <label style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">Foto de fundo (Estilo Foto Cheia) <span class="usage-badge" data-usage-for="foto"></span></label>
+          <div class="img-upload-area" id="area-hero-foto-fundo">
+            <input type="file" accept="image/*" onchange="previewImg(this,'prev-hero-foto-fundo','area-hero-foto-fundo','hero-foto-fundo-url'); initReposition('hero-foto-fundo')" />
+            <div class="upload-icon">📷</div>
+            <p>Clique para escolher a foto<br><small>Recomendado: 1600×1000px, horizontal</small></p>
+            <img id="prev-hero-foto-fundo" class="img-preview" />
+          </div>
+          <input type="hidden" id="hero-foto-fundo-url" />
+          <div class="reposition-slot" data-field="hero-foto-fundo" data-style="aspect-ratio:8/5;max-width:320px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO B -->
+    <div class="config-card collapsed" data-preview-target="#hero-fullscreen">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">🎞️</span>
+        <h2>Banner Fullscreen — Estilo B (3 fotos + texto) <span class="usage-badge" data-usage-for="fullscreen"></span></h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Etiqueta (ex: Coleção 2026)</label>
+            <input type="text" id="herob-titulo" placeholder="Coleção 2026" />
+          </div>
+          <div class="form-group">
+            <label>Subtítulo acima do título grande</label>
+            <input type="text" id="herob-subtitulo" placeholder="Sua via em direção à" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Título grande (destaque)</label>
+            <input type="text" id="herob-titulo-grande" placeholder="ELEGÂNCIA" />
+          </div>
+          <div class="form-group">
+            <label>Texto do botão</label>
+            <input type="text" id="herob-btn" placeholder="Ver Coleção" />
+          </div>
+        </div>
+        <p style="font-size:0.75rem;color:var(--text-s);margin:0.5rem 0 1rem;background:var(--cream);border-radius:6px;padding:0.6rem 0.9rem;">📐 9 fotos verticais · ideal <strong>600×900px</strong> · formato JPG ou PNG · exibidas 3 por vez, trocam a cada 5 seg.</p>
+        <div class="herob-photos-grid" id="herob-photos-grid"></div>
+      </div>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div class="config-card collapsed" data-preview-target="#categories-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">🗂️</span>
+        <h2>Fotos das Categorias (tela inicial)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="subsection" data-preview-target="#categories-section">
+          <div class="subsection-title">📐 Título da seção</div>
+          <div class="form-row">
+            <div class="form-group"><label>Etiqueta</label><input type="text" id="sec-cat-tag" placeholder="Explorar" /></div>
+            <div class="form-group"><label>Título — linha normal</label><input type="text" id="sec-cat-titulo1" placeholder="Explore nossas" /></div>
+          </div>
+          <div class="form-group"><label>Título — parte dourada</label><input type="text" id="sec-cat-titulo2" placeholder="coleções" /></div>
+        </div>
+        <div class="subsection">
+        <div class="subsection-title">🗂️ Fotos por categoria</div>
+        <div class="boxes-grid cat-photos-grid">
+          <div class="box-item">
+            <h4>Vestidos</h4>
+            <div class="img-upload-area" id="area-cat-vestidos">
+              <input type="file" accept="image/*" onchange="previewImg(this,'prev-cat-vestidos','area-cat-vestidos','cat-vestidos-img-url'); initReposition('cat-vestidos')" />
+              <div class="upload-icon">📷</div>
+              <p><small>400×500px</small></p>
+              <img id="prev-cat-vestidos" class="img-preview" />
+            </div>
+            <input type="hidden" id="cat-vestidos-img-url" />
+            <input type="hidden" id="cat-vestidos-img-posx" value="50">
+            <input type="hidden" id="cat-vestidos-img-posy" value="50">
+            <input type="hidden" id="cat-vestidos-img-zoom" value="100">
+            <div class="reposition-wrap" id="reposition-wrap-cat-vestidos">
+              <div class="reposition-frame" id="reposition-frame-cat-vestidos" style="aspect-ratio:4/5;">
+                <img id="reposition-img-cat-vestidos" alt="">
+                <div class="reposition-zoom-btns">
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-vestidos', -10)">−</button>
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-vestidos', 10)">+</button>
+                </div>
+              </div>
+              <div class="reposition-controls">
+                <span class="reposition-hint">↔ Arraste</span>
+                <button type="button" class="btn-reposition-reset" onclick="resetReposition('cat-vestidos')">Centralizar</button>
+              </div>
+            </div>
+          </div>
+          <div class="box-item">
+            <h4>Conjuntos</h4>
+            <div class="img-upload-area" id="area-cat-conjuntos">
+              <input type="file" accept="image/*" onchange="previewImg(this,'prev-cat-conjuntos','area-cat-conjuntos','cat-conjuntos-img-url'); initReposition('cat-conjuntos')" />
+              <div class="upload-icon">📷</div>
+              <p><small>400×500px</small></p>
+              <img id="prev-cat-conjuntos" class="img-preview" />
+            </div>
+            <input type="hidden" id="cat-conjuntos-img-url" />
+            <input type="hidden" id="cat-conjuntos-img-posx" value="50">
+            <input type="hidden" id="cat-conjuntos-img-posy" value="50">
+            <input type="hidden" id="cat-conjuntos-img-zoom" value="100">
+            <div class="reposition-wrap" id="reposition-wrap-cat-conjuntos">
+              <div class="reposition-frame" id="reposition-frame-cat-conjuntos" style="aspect-ratio:4/5;">
+                <img id="reposition-img-cat-conjuntos" alt="">
+                <div class="reposition-zoom-btns">
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-conjuntos', -10)">−</button>
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-conjuntos', 10)">+</button>
+                </div>
+              </div>
+              <div class="reposition-controls">
+                <span class="reposition-hint">↔ Arraste</span>
+                <button type="button" class="btn-reposition-reset" onclick="resetReposition('cat-conjuntos')">Centralizar</button>
+              </div>
+            </div>
+          </div>
+          <div class="box-item">
+            <h4>Blusas</h4>
+            <div class="img-upload-area" id="area-cat-blusas">
+              <input type="file" accept="image/*" onchange="previewImg(this,'prev-cat-blusas','area-cat-blusas','cat-blusas-img-url'); initReposition('cat-blusas')" />
+              <div class="upload-icon">📷</div>
+              <p><small>400×500px</small></p>
+              <img id="prev-cat-blusas" class="img-preview" />
+            </div>
+            <input type="hidden" id="cat-blusas-img-url" />
+            <input type="hidden" id="cat-blusas-img-posx" value="50">
+            <input type="hidden" id="cat-blusas-img-posy" value="50">
+            <input type="hidden" id="cat-blusas-img-zoom" value="100">
+            <div class="reposition-wrap" id="reposition-wrap-cat-blusas">
+              <div class="reposition-frame" id="reposition-frame-cat-blusas" style="aspect-ratio:4/5;">
+                <img id="reposition-img-cat-blusas" alt="">
+                <div class="reposition-zoom-btns">
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-blusas', -10)">−</button>
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-blusas', 10)">+</button>
+                </div>
+              </div>
+              <div class="reposition-controls">
+                <span class="reposition-hint">↔ Arraste</span>
+                <button type="button" class="btn-reposition-reset" onclick="resetReposition('cat-blusas')">Centralizar</button>
+              </div>
+            </div>
+          </div>
+          <div class="box-item">
+            <h4>Calças</h4>
+            <div class="img-upload-area" id="area-cat-calcas">
+              <input type="file" accept="image/*" onchange="previewImg(this,'prev-cat-calcas','area-cat-calcas','cat-calcas-img-url'); initReposition('cat-calcas')" />
+              <div class="upload-icon">📷</div>
+              <p><small>400×500px</small></p>
+              <img id="prev-cat-calcas" class="img-preview" />
+            </div>
+            <input type="hidden" id="cat-calcas-img-url" />
+            <input type="hidden" id="cat-calcas-img-posx" value="50">
+            <input type="hidden" id="cat-calcas-img-posy" value="50">
+            <input type="hidden" id="cat-calcas-img-zoom" value="100">
+            <div class="reposition-wrap" id="reposition-wrap-cat-calcas">
+              <div class="reposition-frame" id="reposition-frame-cat-calcas" style="aspect-ratio:4/5;">
+                <img id="reposition-img-cat-calcas" alt="">
+                <div class="reposition-zoom-btns">
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-calcas', -10)">−</button>
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-calcas', 10)">+</button>
+                </div>
+              </div>
+              <div class="reposition-controls">
+                <span class="reposition-hint">↔ Arraste</span>
+                <button type="button" class="btn-reposition-reset" onclick="resetReposition('cat-calcas')">Centralizar</button>
+              </div>
+            </div>
+          </div>
+          <div class="box-item">
+            <h4>Casacos</h4>
+            <div class="img-upload-area" id="area-cat-casacos">
+              <input type="file" accept="image/*" onchange="previewImg(this,'prev-cat-casacos','area-cat-casacos','cat-casacos-img-url'); initReposition('cat-casacos')" />
+              <div class="upload-icon">📷</div>
+              <p><small>400×500px</small></p>
+              <img id="prev-cat-casacos" class="img-preview" />
+            </div>
+            <input type="hidden" id="cat-casacos-img-url" />
+            <input type="hidden" id="cat-casacos-img-posx" value="50">
+            <input type="hidden" id="cat-casacos-img-posy" value="50">
+            <input type="hidden" id="cat-casacos-img-zoom" value="100">
+            <div class="reposition-wrap" id="reposition-wrap-cat-casacos">
+              <div class="reposition-frame" id="reposition-frame-cat-casacos" style="aspect-ratio:4/5;">
+                <img id="reposition-img-cat-casacos" alt="">
+                <div class="reposition-zoom-btns">
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-casacos', -10)">−</button>
+                  <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('cat-casacos', 10)">+</button>
+                </div>
+              </div>
+              <div class="reposition-controls">
+                <span class="reposition-hint">↔ Arraste</span>
+                <button type="button" class="btn-reposition-reset" onclick="resetReposition('cat-casacos')">Centralizar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAIXAS DESTAQUE -->
+    <div class="config-card collapsed" data-preview-target="#hero-editorial">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">◻️</span>
+        <h2>Caixas de Destaque (3 fotos ao lado do Hero) <span class="usage-badge" data-usage-for="editorial"></span></h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="boxes-grid">
+
+          <div class="box-item">
+            <h4>Caixa 1 — Grande</h4>
+            <div class="form-group">
+              <label>Etiqueta</label>
+              <input type="text" id="box1-label" placeholder="Destaque da Coleção" />
+            </div>
+            <div class="form-group">
+              <label>Nome da peça</label>
+              <input type="text" id="box1-nome" placeholder="Vestido Midi Canelado" />
+            </div>
+            <div class="form-group">
+              <label>Foto</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" onchange="previewImg(this,'prev-box1','','box1-img-url'); initReposition('box1')" />
+                <div class="upload-icon">📷</div>
+                <p>Escolher foto<br><small>Recomendado: horizontal, 800×600px</small></p>
+                <img id="prev-box1" class="img-preview" />
+              </div>
+              <input type="hidden" id="box1-img-url" />
+              <div class="reposition-slot" data-field="box1" data-style="aspect-ratio:4/3;"></div>
+            </div>
+          </div>
+
+          <div class="box-item">
+            <h4>Caixa 2 — Pequena esquerda</h4>
+            <div class="form-group">
+              <label>Nome da peça</label>
+              <input type="text" id="box2-nome" placeholder="Conjunto Alfaiataria" />
+            </div>
+            <div class="form-group">
+              <label>Foto</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" onchange="previewImg(this,'prev-box2','','box2-img-url'); initReposition('box2')" />
+                <div class="upload-icon">📷</div>
+                <p>Escolher foto<br><small>Recomendado: horizontal, 500×375px</small></p>
+                <img id="prev-box2" class="img-preview" />
+              </div>
+              <input type="hidden" id="box2-img-url" />
+              <div class="reposition-slot" data-field="box2" data-style="aspect-ratio:4/3;"></div>
+            </div>
+          </div>
+
+          <div class="box-item">
+            <h4>Caixa 3 — Pequena direita</h4>
+            <div class="form-group">
+              <label>Nome da peça</label>
+              <input type="text" id="box3-nome" placeholder="Blusa de Seda" />
+            </div>
+            <div class="form-group">
+              <label>Foto</label>
+              <div class="img-upload-area">
+                <input type="file" accept="image/*" onchange="previewImg(this,'prev-box3','','box3-img-url'); initReposition('box3')" />
+                <div class="upload-icon">📷</div>
+                <p>Escolher foto<br><small>Recomendado: horizontal, 500×375px</small></p>
+                <img id="prev-box3" class="img-preview" />
+              </div>
+              <input type="hidden" id="box3-img-url" />
+              <div class="reposition-slot" data-field="box3" data-style="aspect-ratio:4/3;"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- DEPOIMENTOS -->
+    <div class="config-card collapsed" data-preview-target="#testimonials-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">⭐</span>
+        <h2>Depoimentos das Clientes</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="subsection" data-preview-target="#testimonials-section">
+          <div class="subsection-title">📐 Título da seção</div>
+          <div class="form-row">
+            <div class="form-group"><label>Etiqueta</label><input type="text" id="sec-dep-tag" placeholder="Depoimentos" /></div>
+            <div class="form-group"><label>Título — linha normal</label><input type="text" id="sec-dep-titulo1" placeholder="O que nossas clientes" /></div>
+          </div>
+          <div class="form-group"><label>Título — parte dourada</label><input type="text" id="sec-dep-titulo2" placeholder="dizem" /></div>
+        </div>
+        <div class="subsection">
+        <div class="subsection-title">⭐ Depoimentos</div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-weight:400;">
+            <input type="checkbox" id="dep-ativo" checked style="width:18px;height:18px;cursor:pointer;" />
+            <span>Exibir seção de depoimentos na página inicial</span>
+          </label>
+        </div>
+        <p style="font-size:0.78rem;color:var(--text-s);margin-bottom:1.25rem;">Até 6 depoimentos. Eles aparecem na página inicial da loja.</p>
+        <div id="depoimentos-lista"></div>
+        <button class="btn-save" onclick="adicionarDepoimento()" style="background:var(--cream-d);color:var(--gold);border:1px solid var(--gold-pale);margin-top:0.5rem;">
+          + Adicionar depoimento
+        </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INSTAGRAM -->
+    <div class="config-card collapsed" data-preview-target="#instagram-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">📷</span>
+        <h2>Posts do Instagram (página inicial)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="subsection" data-preview-target="#instagram-section">
+          <div class="subsection-title">📐 Título da seção</div>
+          <div class="form-row">
+            <div class="form-group"><label>Etiqueta</label><input type="text" id="sec-ig-tag" placeholder="Comunidade" /></div>
+            <div class="form-group"><label>Título — linha normal</label><input type="text" id="sec-ig-titulo1" placeholder="Marcou a" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Título — parte dourada</label><input type="text" id="sec-ig-titulo2" placeholder="Jeh Corrêa?" /></div>
+            <div class="form-group"><label>Texto</label><input type="text" id="sec-ig-texto" placeholder="Adoramos ver você usando nossas roupas. Marque @jehcorrea_modafeminina no Instagram!" /></div>
+          </div>
+        </div>
+        <div class="subsection">
+        <div class="subsection-title">📷 Posts</div>
+        <p style="font-size:0.78rem;color:var(--text-s);margin-bottom:1.25rem;">
+          Alguém marcou a Jeh Corrêa em uma foto linda? Cole os links dos posts abaixo e ative para exibi-los na página inicial. Eles aparecem em fileiras de 4.
+        </p>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;font-weight:400;">
+            <input type="checkbox" id="ig-ativo" style="width:18px;height:18px;cursor:pointer;" />
+            <span>Exibir posts do Instagram na página inicial</span>
+          </label>
+        </div>
+        <div id="ig-posts-lista"></div>
+        <button class="btn-save" onclick="adicionarIgPost()" style="background:var(--cream-d);color:var(--gold);border:1px solid var(--gold-pale);margin-top:0.5rem;">
+          + Adicionar link
+        </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAIXA SUPERIOR -->
+    <div class="config-card collapsed" data-preview-target="#faixa-bar">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">📢</span>
+        <h2>Faixa de Avisos (passa no topo do site)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <p style="font-size:0.78rem;color:var(--text-s);margin-bottom:1rem;">
+          Separe cada aviso em uma linha. Máximo recomendado: 7 itens.
+        </p>
+        <div class="form-group">
+          <label>Itens da faixa (um por linha)</label>
+          <textarea id="faixa-itens" placeholder="Peças Exclusivas&#10;Envio para Todo Brasil&#10;Garantia de 6 Meses&#10;Até 6x Sem Juros ou 5% de Desconto no Pix" style="min-height:140px;font-size:0.85rem;line-height:1.7;"></textarea>
+        </div>
+        <p style="font-size:0.72rem;color:var(--text-s);">✦ Fundo marrom escuro · Texto branco · Passa automaticamente</p>
+      </div>
+    </div>
+
+    <!-- INFORMAÇÕES GERAIS -->
+    <div class="config-card collapsed" data-preview-target="#footer-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">📋</span>
+        <h2>Informações Gerais</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>WhatsApp (só números, com DDD)</label>
+            <input type="text" id="cfg-whatsapp" placeholder="5547999999999" />
+          </div>
+          <div class="form-group">
+            <label>E-mail de contato</label>
+            <input type="text" id="cfg-email" placeholder="contato@jehcorrea.com.br" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Frete grátis acima de (R$)</label>
+            <input type="number" id="cfg-frete-gratis" placeholder="299" />
+          </div>
+          <div class="form-group">
+            <label>Desconto Pix (%)</label>
+            <input type="number" id="cfg-pix-desc" placeholder="5" min="0" max="30" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Aviso no topo do site (deixe vazio para ocultar — entra como primeiro item da faixa acima)</label>
+          <input type="text" id="cfg-aviso" placeholder="🎁 Frete grátis acima de R$ 299 | Parcele em até 6x" />
+        </div>
+        <div class="form-group">
+          <label>Horário de atendimento (aparece no rodapé)</label>
+          <textarea id="cfg-horario" placeholder="Seg–Sex: 9h às 18h&#10;Sáb: 9h às 13h" style="min-height:60px;"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Link do Instagram</label>
+            <input type="text" id="cfg-instagram-url" placeholder="https://instagram.com/jehcorrea_modafeminina" />
+          </div>
+          <div class="form-group">
+            <label>Link do Facebook</label>
+            <input type="text" id="cfg-facebook-url" placeholder="https://facebook.com/jehcorrea" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Link do TikTok</label>
+          <input type="text" id="cfg-tiktok-url" placeholder="https://tiktok.com/@jehcorrea" />
+        </div>
+      </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <div class="config-card collapsed" data-preview-target="#footer-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">📄</span>
+        <h2>Rodapé (aparece em todas as páginas)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="form-group">
+          <label>Texto de apresentação (abaixo da logo)</label>
+          <textarea id="rodape-blurb" placeholder="Roupas exclusivas, criadas para mulheres que valorizam beleza, qualidade e significado. Baseada em Balneário Camboriú, entregamos para todo o Brasil." style="min-height:80px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Texto de copyright</label>
+          <input type="text" id="rodape-copyright" placeholder="© 2026 Jeh Corrêa. Todos os direitos reservados." />
+        </div>
+      </div>
+    </div>
+
+    <!-- VANTAGENS / DIFERENCIAIS -->
+    <div class="config-card collapsed" data-preview-target="#trust-strip-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">✦</span>
+        <h2>Vantagens / Diferenciais</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <p style="font-size:0.75rem;color:var(--text-s);margin-bottom:1.25rem;">Os 4 blocos que aparecem duas vezes na página inicial (logo abaixo do banner e na seção "Diferenciais"). Editar aqui atualiza os dois lugares de uma vez.</p>
+        <div class="subsection">
+          <div class="subsection-title">① Peças Exclusivas</div>
+          <div class="form-row">
+            <div class="form-group"><label>Título</label><input type="text" id="trust1-titulo" placeholder="Peças Exclusivas" /></div>
+            <div class="form-group"><label>Descrição</label><input type="text" id="trust1-desc" placeholder="Tecidos selecionados e acabamento cuidado em cada costura" /></div>
+          </div>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">② Envio</div>
+          <div class="form-row">
+            <div class="form-group"><label>Título</label><input type="text" id="trust2-titulo" placeholder="Envio para Todo Brasil" /></div>
+            <div class="form-group"><label>Descrição</label><input type="text" id="trust2-desc" placeholder="Entrega segura com rastreamento" /></div>
+          </div>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">③ Garantia</div>
+          <div class="form-row">
+            <div class="form-group"><label>Título</label><input type="text" id="trust3-titulo" placeholder="Garantia de 6 Meses" /></div>
+            <div class="form-group"><label>Descrição</label><input type="text" id="trust3-desc" placeholder="Contra defeitos de fabricação e costura" /></div>
+          </div>
+        </div>
+        <div class="subsection">
+          <div class="subsection-title">④ Parcelamento</div>
+          <div class="form-row">
+            <div class="form-group"><label>Título</label><input type="text" id="trust4-titulo" placeholder="Parcelamento" /></div>
+            <div class="form-group"><label>Descrição (deixe vazio para usar o Desconto Pix automático)</label><input type="text" id="trust4-desc" placeholder="Até 6x sem juros ou 5% de desconto no Pix" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLEÇÃO / DESTAQUE -->
+    <div class="config-card collapsed" data-preview-target="#colecoes">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">💍</span>
+        <h2>Seção "Peças em Destaque"</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <p style="font-size:0.75rem;color:var(--text-s);margin-bottom:1.25rem;">Os produtos exibidos aqui vêm automaticamente do seu catálogo — esse card controla só o título da seção.</p>
+        <div class="form-row">
+          <div class="form-group"><label>Etiqueta</label><input type="text" id="sec-col-tag" placeholder="Coleção completa" /></div>
+          <div class="form-group"><label>Título — linha normal</label><input type="text" id="sec-col-titulo1" placeholder="Seleção" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Título — parte dourada</label><input type="text" id="sec-col-titulo2" placeholder="exclusiva" /></div>
+          <div class="form-group"><label>Texto do link</label><input type="text" id="sec-col-link" placeholder="Ver todos os produtos" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div class="config-card collapsed" data-preview-target="#newsletter-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">✉</span>
+        <h2>Newsletter</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="form-row">
+          <div class="form-group"><label>Etiqueta</label><input type="text" id="news-tag" placeholder="Novidades" /></div>
+          <div class="form-group"><label>Título — linha normal</label><input type="text" id="news-titulo1" placeholder="Fique por" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Título — parte dourada</label><input type="text" id="news-titulo2" placeholder="dentro" /></div>
+          <div class="form-group"><label>Texto do botão</label><input type="text" id="news-botao" placeholder="Assinar" /></div>
+        </div>
+        <div class="form-group"><label>Subtítulo</label><input type="text" id="news-sub" placeholder="Receba em primeira mão nossas novas coleções, promoções exclusivas e dicas de estilo." /></div>
+        <div class="form-group"><label>Aviso de privacidade</label><input type="text" id="news-privacidade" placeholder="Sem spam. Cancele quando quiser." /></div>
+      </div>
+    </div>
+
+    <!-- CONTADORES HERO -->
+    <div class="config-card collapsed" data-preview-target="#hero-editorial">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">📊</span>
+        <h2>Números de Credibilidade (abaixo do hero)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Número 1 (ex: 100%)</label>
+            <input type="text" id="stat1-num" placeholder="100%" />
+          </div>
+          <div class="form-group">
+            <label>Legenda 1</label>
+            <input type="text" id="stat1-label" placeholder="Peças Exclusivas" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Número 2</label>
+            <input type="text" id="stat2-num" placeholder="500+" />
+          </div>
+          <div class="form-group">
+            <label>Legenda 2</label>
+            <input type="text" id="stat2-label" placeholder="Clientes Felizes" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Número 3</label>
+            <input type="text" id="stat3-num" placeholder="6 meses" />
+          </div>
+          <div class="form-group">
+            <label>Legenda 3</label>
+            <input type="text" id="stat3-label" placeholder="de Garantia" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PÁGINA SOBRE (NOSSA HISTÓRIA) -->
+    <div class="config-card collapsed" data-preview-page="sobre.html" data-preview-target="#sobre-hero-section">
+      <div class="config-card-header" onclick="toggleCard(this)">
+        <span class="icon">📖</span>
+        <h2>Página Sobre (Nossa História)</h2>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="config-card-body">
+        <div class="page-mock">
+        <p class="mock-hint">✎ Isto é a página de verdade — toque no lapisinho (ou direto no texto) pra editar cada trecho.</p>
+
+        <div class="mock-block" data-preview-target="#sobre-hero-section">
+          <span class="ed-inline-wrap"><input type="text" id="sobre-hero-tag" class="ed-field mock-tag ed-inline" placeholder="Nossa história" /><button type="button" class="ed-pencil">✎</button></span>
+          <div class="mock-heading">
+            <div class="ed"><input type="text" id="sobre-hero-titulo1" class="ed-field" placeholder="Criadas com" /><button type="button" class="ed-pencil">✎</button></div>
+            <div class="ed"><input type="text" id="sobre-hero-titulo2" class="ed-field mock-gold" placeholder="amor e esmero" /><button type="button" class="ed-pencil">✎</button></div>
+          </div>
+          <div class="ed"><input type="text" id="sobre-hero-sub" class="ed-field mock-body" placeholder="A Jeh Corrêa nasceu para celebrar histórias que merecem ser eternizadas." /><button type="button" class="ed-pencil">✎</button></div>
+
+          <div class="mock-cards" style="grid-template-columns:repeat(4,1fr);margin-top:1.1rem;">
+            <div class="mock-card mock-stat">
+              <div class="ed"><input type="text" id="sobre-stat1-num" class="ed-field mock-num" placeholder="500+" /><button type="button" class="ed-pencil">✎</button></div>
+              <div class="ed"><input type="text" id="sobre-stat1-label" class="ed-field mock-label" placeholder="Clientes felizes" /><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card mock-stat">
+              <div class="ed"><input type="text" id="sobre-stat2-num" class="ed-field mock-num" placeholder="100%" /><button type="button" class="ed-pencil">✎</button></div>
+              <div class="ed"><input type="text" id="sobre-stat2-label" class="ed-field mock-label" placeholder="Peças exclusivas" /><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card mock-stat">
+              <div class="ed"><input type="text" id="sobre-stat3-num" class="ed-field mock-num" placeholder="3+" /><button type="button" class="ed-pencil">✎</button></div>
+              <div class="ed"><input type="text" id="sobre-stat3-label" class="ed-field mock-label" placeholder="Anos no mercado" /><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card mock-stat">
+              <div class="ed"><input type="text" id="sobre-stat4-num" class="ed-field mock-num" placeholder="100%" /><button type="button" class="ed-pencil">✎</button></div>
+              <div class="ed"><input type="text" id="sobre-stat4-label" class="ed-field mock-label" placeholder="Satisfação" /><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mock-block" data-preview-target="#sobre-historia-section">
+          <span class="ed-inline-wrap"><input type="text" id="sobre-hist-tag" class="ed-field mock-tag ed-inline" placeholder="Quem somos" /><button type="button" class="ed-pencil">✎</button></span>
+          <div class="mock-heading mock-heading-inline">
+            <span class="ed-inline-wrap"><input type="text" id="sobre-hist-titulo1" class="ed-field ed-inline" placeholder="Uma história feita de" /><button type="button" class="ed-pencil">✎</button></span>
+            <span class="ed-inline-wrap"><input type="text" id="sobre-hist-titulo2" class="ed-field mock-gold ed-inline" placeholder="paixão" /><button type="button" class="ed-pencil">✎</button></span>
+          </div>
+          <div class="mock-hist-grid">
+            <div>
+              <div class="ed-toolbar">
+                <button type="button" class="ed-tool-btn" onclick="wrapBold('sobre-hist-texto')" title="Negrito na seleção"><strong>B</strong></button>
+                <span class="ed-toolbar-hint">selecione o trecho e clique aqui pra deixar em negrito</span>
+              </div>
+              <div class="ed"><textarea id="sobre-hist-texto" class="ed-field mock-body" placeholder="Seu nome é uma homenagem a uma mulher que inspirou **amor, força e presença**...&#10;&#10;Acreditamos que uma peça de roupa vai muito além de um acessório..."></textarea><button type="button" class="ed-pencil">✎</button></div>
+              <div class="mock-hist-signature">
+                <div class="ed-inline-wrap"><input type="text" id="sobre-hist-sig-nome" class="ed-field ed-inline mock-sig-nome" placeholder="Valquiria Silva" /><button type="button" class="ed-pencil">✎</button></div>
+                <div class="ed-inline-wrap"><input type="text" id="sobre-hist-sig-cargo" class="ed-field ed-inline mock-sig-cargo" placeholder="Fundadora & Criadora" /><button type="button" class="ed-pencil">✎</button></div>
+              </div>
+            </div>
+            <div>
+              <div class="img-upload-area" id="area-sobre-hist">
+                <input type="file" accept="image/*" onchange="previewImg(this,'prev-sobre-hist','area-sobre-hist','sobre-hist-img-url'); initReposition('sobre-hist')" />
+                <div class="upload-icon">📷</div>
+                <p>Foto<br><small>Vertical, 800×1000px</small></p>
+                <img id="prev-sobre-hist" class="img-preview" />
+              </div>
+              <input type="hidden" id="sobre-hist-img-url" />
+              <div class="reposition-slot" data-field="sobre-hist" data-style="aspect-ratio:4/5;"></div>
+              <div class="ed" style="margin-top:0.5rem;"><input type="text" id="sobre-hist-quote" class="ed-field mock-quote" placeholder="Cada peça que crio carrega um pedaço do meu coração." /><button type="button" class="ed-pencil">✎</button></div>
+              <div class="ed"><input type="text" id="sobre-hist-quote-autor" class="ed-field mock-label" placeholder="Valquiria Silva · Fundadora" /><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mock-block" data-preview-target="#sobre-valores-section">
+          <span class="ed-inline-wrap"><input type="text" id="sobre-val-tag" class="ed-field mock-tag ed-inline" placeholder="O que nos move" /><button type="button" class="ed-pencil">✎</button></span>
+          <div class="mock-heading mock-heading-inline">
+            <span class="ed-inline-wrap"><input type="text" id="sobre-val-titulo1" class="ed-field ed-inline" placeholder="Nossos" /><button type="button" class="ed-pencil">✎</button></span>
+            <span class="ed-inline-wrap"><input type="text" id="sobre-val-titulo2" class="ed-field mock-gold ed-inline" placeholder="valores" /><button type="button" class="ed-pencil">✎</button></span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-val1-icon" class="ed-field ed-icon-field" placeholder="✦" /><div class="ed" style="flex:1;"><input type="text" id="sobre-val1-titulo" class="ed-field mock-card-title" placeholder="Exclusividade" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-val1-desc" class="ed-field mock-card-desc" placeholder="Cada peça é criada com atenção individual. Não produzimos em massa — cada peça recebe o tempo e o cuidado que merece, do design ao acabamento."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-val2-icon" class="ed-field ed-icon-field" placeholder="◈" /><div class="ed" style="flex:1;"><input type="text" id="sobre-val2-titulo" class="ed-field mock-card-title" placeholder="Autenticidade" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-val2-desc" class="ed-field mock-card-desc" placeholder="Trabalhamos com tecidos selecionados e acabamento cuidado em cada peça. Cada peça acompanha garantia contra defeitos de fabricação. O que você vê é o que você recebe."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-val3-icon" class="ed-field ed-icon-field" placeholder="∿" /><div class="ed" style="flex:1;"><input type="text" id="sobre-val3-titulo" class="ed-field mock-card-title" placeholder="Feminilidade" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-val3-desc" class="ed-field mock-card-desc" placeholder="Criamos para celebrar a mulher em todas as suas fases. Nossas roupas acompanham momentos únicos — do dia a dia às ocasiões mais especiais da vida."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-val4-icon" class="ed-field ed-icon-field" placeholder="○" /><div class="ed" style="flex:1;"><input type="text" id="sobre-val4-titulo" class="ed-field mock-card-title" placeholder="Atemporalidade" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-val4-desc" class="ed-field mock-card-desc" placeholder="Design que transcende tendências. Criamos peças que você vai amar hoje, daqui a 10 anos e que vai querer passar para as próximas gerações."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-val5-icon" class="ed-field ed-icon-field" placeholder="◎" /><div class="ed" style="flex:1;"><input type="text" id="sobre-val5-titulo" class="ed-field mock-card-title" placeholder="Transparência" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-val5-desc" class="ed-field mock-card-desc" placeholder="Preços justos, processo claro e atendimento honesto. Você sabe exatamente o que está comprando — sem surpresas, com toda confiança."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-val6-icon" class="ed-field ed-icon-field" placeholder="⊛" /><div class="ed" style="flex:1;"><input type="text" id="sobre-val6-titulo" class="ed-field mock-card-title" placeholder="Cuidado" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-val6-desc" class="ed-field mock-card-desc" placeholder="Da embalagem especial ao atendimento pós-venda, cada detalhe importa. Queremos que sua experiência seja tão especial quanto a peça que você escolheu."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mock-block" data-preview-target="#sobre-processo-section">
+          <span class="ed-inline-wrap"><input type="text" id="sobre-proc-tag" class="ed-field mock-tag ed-inline" placeholder="Como fazemos" /><button type="button" class="ed-pencil">✎</button></span>
+          <div class="mock-heading mock-heading-inline">
+            <span class="ed-inline-wrap"><input type="text" id="sobre-proc-titulo1" class="ed-field ed-inline" placeholder="Do design à sua" /><button type="button" class="ed-pencil">✎</button></span>
+            <span class="ed-inline-wrap"><input type="text" id="sobre-proc-titulo2" class="ed-field mock-gold ed-inline" placeholder="porta" /><button type="button" class="ed-pencil">✎</button></span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-proc1-icon" class="ed-field ed-icon-field" placeholder="✦" /><div class="ed" style="flex:1;"><input type="text" id="sobre-proc1-titulo" class="ed-field mock-card-title" placeholder="Criação" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-proc1-desc" class="ed-field mock-card-desc" placeholder="Cada peça começa com um esboço. O design é desenvolvido pensando na elegância, no conforto e na durabilidade."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-proc2-icon" class="ed-field ed-icon-field" placeholder="◈" /><div class="ed" style="flex:1;"><input type="text" id="sobre-proc2-titulo" class="ed-field mock-card-title" placeholder="Seleção" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-proc2-desc" class="ed-field mock-card-desc" placeholder="Escolhemos apenas materiais de alta qualidade e pedras selecionadas para garantir o melhor resultado."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-proc3-icon" class="ed-field ed-icon-field" placeholder="○" /><div class="ed" style="flex:1;"><input type="text" id="sobre-proc3-titulo" class="ed-field mock-card-title" placeholder="Produção" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-proc3-desc" class="ed-field mock-card-desc" placeholder="Cada peça é produzida com atenção artesanal. O acabamento é feito à mão para garantir perfeição em cada detalhe."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-proc4-icon" class="ed-field ed-icon-field" placeholder="✉" /><div class="ed" style="flex:1;"><input type="text" id="sobre-proc4-titulo" class="ed-field mock-card-title" placeholder="Entrega" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-proc4-desc" class="ed-field mock-card-desc" placeholder="Embalada com carinho em nossa caixa exclusiva, sua peça chega pronta para presentear — inclusive a si mesma."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mock-block" data-preview-target="#sobre-diferenciais-section">
+          <span class="ed-inline-wrap"><input type="text" id="sobre-dif-tag" class="ed-field mock-tag ed-inline" placeholder="Por que nos escolher" /><button type="button" class="ed-pencil">✎</button></span>
+          <div class="mock-heading mock-heading-inline">
+            <span class="ed-inline-wrap"><input type="text" id="sobre-dif-titulo1" class="ed-field ed-inline" placeholder="O que nos torna" /><button type="button" class="ed-pencil">✎</button></span>
+            <span class="ed-inline-wrap"><input type="text" id="sobre-dif-titulo2" class="ed-field mock-gold ed-inline" placeholder="diferentes" /><button type="button" class="ed-pencil">✎</button></span>
+          </div>
+          <div class="mock-cards">
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-dif1-icon" class="ed-field ed-icon-field" placeholder="🏅" /><div class="ed" style="flex:1;"><input type="text" id="sobre-dif1-titulo" class="ed-field mock-card-title" placeholder="Peças Exclusivas" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-dif1-desc" class="ed-field mock-card-desc" placeholder="Tecido de qualidade e acabamento cuidado em todas as nossas peças. Você recebe a garantia por escrito da qualidade do material."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-dif2-icon" class="ed-field ed-icon-field" placeholder="📦" /><div class="ed" style="flex:1;"><input type="text" id="sobre-dif2-titulo" class="ed-field mock-card-title" placeholder="Embalagem Exclusiva" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-dif2-desc" class="ed-field mock-card-desc" placeholder="Cada pedido vem em nossa caixa especial Jeh Corrêa, com papel de seda e cartão personalizado. Perfeito para presentear ou se presentear."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-dif3-icon" class="ed-field ed-icon-field" placeholder="🔄" /><div class="ed" style="flex:1;"><input type="text" id="sobre-dif3-titulo" class="ed-field mock-card-title" placeholder="Troca Garantida" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-dif3-desc" class="ed-field mock-card-desc" placeholder="Não ficou como esperado? Você tem 30 dias para trocar sem burocracia. Nossa política é simples: queremos que você fique 100% satisfeita."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+            <div class="mock-card">
+              <div class="mock-card-head"><input type="text" id="sobre-dif4-icon" class="ed-field ed-icon-field" placeholder="💬" /><div class="ed" style="flex:1;"><input type="text" id="sobre-dif4-titulo" class="ed-field mock-card-title" placeholder="Atendimento Personalizado" /><button type="button" class="ed-pencil">✎</button></div></div>
+              <div class="ed"><textarea id="sobre-dif4-desc" class="ed-field mock-card-desc" placeholder="Estamos aqui para ajudar. Atendemos pelo WhatsApp em horário comercial para tirar dúvidas, ajudar na escolha e acompanhar seu pedido."></textarea><button type="button" class="ed-pencil">✎</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mock-block" data-preview-target="#sobre-cta-section">
+          <span class="ed-inline-wrap"><input type="text" id="sobre-cta-tag" class="ed-field mock-tag ed-inline" placeholder="Venha nos conhecer" /><button type="button" class="ed-pencil">✎</button></span>
+          <div class="mock-heading mock-heading-inline">
+            <span class="ed-inline-wrap"><input type="text" id="sobre-cta-titulo1" class="ed-field ed-inline" placeholder="Pronta para encontrar sua" /><button type="button" class="ed-pencil">✎</button></span>
+            <span class="ed-inline-wrap"><input type="text" id="sobre-cta-titulo2" class="ed-field mock-gold ed-inline" placeholder="peça?" /><button type="button" class="ed-pencil">✎</button></span>
+          </div>
+          <div class="ed"><input type="text" id="sobre-cta-texto" class="ed-field mock-body" placeholder="Explore nossa coleção e descubra a peça perfeita para você ou para presentear alguém especial." /><button type="button" class="ed-pencil">✎</button></div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- /cards-col -->
+
+  <aside class="preview-pane">
+    <div class="preview-pane-inner">
+      <div class="preview-select">Visualizando <strong id="preview-select-label">Página Inicial</strong></div>
+      <div class="browser-chrome-bar">
+        <span class="chrome-dot" style="background:#E8A5A5;"></span>
+        <span class="chrome-dot" style="background:#F0D28A;"></span>
+        <span class="chrome-dot" style="background:#A8D5B5;"></span>
+        <span class="chrome-url" id="preview-chrome-url">SEU-DOMINIO-AQUI.com.br</span>
+      </div>
+      <iframe id="preview-iframe" src="../index.html" title="Preview do site"></iframe>
+      <a class="preview-open-link" id="preview-open-link" href="../index.html" target="_blank">Abrir loja em nova aba ↗</a>
+    </div>
+    <p style="font-size:0.65rem;color:var(--text-s);margin-top:0.8rem;line-height:1.6;">
+      ✦ O que você digita aparece aqui na hora, mas só vale de verdade depois de clicar em <strong>Salvar tudo</strong>.
+    </p>
+  </aside>
+
+  </div>
+  <!-- /content-layout -->
+</div>
+</div>
+<!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "COLE_AQUI_SUA_API_KEY_DO_FIREBASE",
+  authDomain: "jeh-correa-moda.firebaseapp.com",
+  projectId: "jeh-correa-moda",
+  storageBucket: "jeh-correa-moda.firebasestorage.app",
+  messagingSenderId: "COLE_AQUI_SEU_MESSAGING_SENDER_ID",
+  appId: "COLE_AQUI_SEU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const CLOUDINARY_CLOUD = 'COLE_AQUI_SEU_CLOUD_NAME_CLOUDINARY';
+const CLOUDINARY_PRESET = 'jeh-correa-moda';
+
+// AUTH
+onAuthStateChanged(auth, user => {
+  if (!user) { window.location.href = 'index.html'; return; }
+  document.getElementById('user-email-display').textContent = user.email;
+  carregarConfigs();
+});
+
+window.logout = async () => { await signOut(auth); window.location.href = 'index.html'; };
+
+if (localStorage.getItem('sidebarCollapsed') === '1') {
+  document.body.classList.add('sidebar-collapsed');
+}
+window.toggleSidebar = function() {
+  if (window.matchMedia('(max-width:1024px)').matches) {
+    document.body.classList.toggle('sidebar-mobile-open');
+  } else {
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+  }
+};
+window.closeSidebar = function() {
+  if (window.matchMedia('(max-width:1024px)').matches) {
+    document.body.classList.remove('sidebar-mobile-open');
+  } else {
+    document.body.classList.add('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', '1');
+  }
+};
+
+// ── CARREGAR ──
+async function carregarConfigs() {
+  try {
+    const snap = await getDoc(doc(db, 'configuracoes', 'loja'));
+    if (!snap.exists()) return;
+    const d = snap.data();
+
+    // Hero
+    setVal('hero-titulo1', d.hero?.titulo1);
+    setVal('hero-titulo2', d.hero?.titulo2);
+    setVal('hero-titulo1b', d.hero?.titulo1b);
+    setVal('hero-titulo2b', d.hero?.titulo2b);
+    const heroRot = document.getElementById('hero-titulo-rotativo');
+    if (heroRot) heroRot.checked = !!d.hero?.tituloRotativo;
+    updateHeroAltPhraseVisibility();
+    setVal('hero-subtitulo', d.hero?.subtitulo);
+    setVal('hero-btn', d.hero?.btn);
+    setVal('hero-label', d.hero?.label);
+    if (d.hero?.img) {
+      showPreview('prev-hero', d.hero.img, 'hero-img-url');
+      setVal('hero-img-posx', d.hero.posX ?? 50);
+      setVal('hero-img-posy', d.hero.posY ?? 50);
+      setVal('hero-img-zoom', d.hero.zoom ?? 100);
+      initReposition('hero');
+    }
+    if (d.hero?.imgMobile) {
+      showPreview('prev-hero-mobile', d.hero.imgMobile, 'hero-img-mobile-url');
+      setVal('hero-mobile-img-posx', d.hero.imgMobilePosX ?? 50);
+      setVal('hero-mobile-img-posy', d.hero.imgMobilePosY ?? 50);
+      setVal('hero-mobile-img-zoom', d.hero.imgMobileZoom ?? 100);
+      initReposition('hero-mobile');
+    }
+    if (d.hero?.imgFundo) {
+      showPreview('prev-hero-foto-fundo', d.hero.imgFundo, 'hero-foto-fundo-url');
+      setVal('hero-foto-fundo-img-posx', d.hero.imgFundoPosX ?? 50);
+      setVal('hero-foto-fundo-img-posy', d.hero.imgFundoPosY ?? 50);
+      setVal('hero-foto-fundo-img-zoom', d.hero.imgFundoZoom ?? 100);
+      initReposition('hero-foto-fundo');
+    }
+    const estilo = d.hero?.estilo || 'editorial';
+    const radioEl = document.querySelector(`input[name="hero-estilo"][value="${estilo}"]`);
+    if (radioEl) radioEl.checked = true;
+    updateBannerUsageBadges();
+
+    // Caixas de Destaque (box1/2/3) — antes não eram recarregadas ao abrir a
+    // página, então salvar de novo sem preencher tudo apagava os dados reais.
+    setVal('box1-label', d.box1?.label);
+    setVal('box1-nome', d.box1?.nome);
+    if (d.box1?.img) {
+      showPreview('prev-box1', d.box1.img, 'box1-img-url');
+      setVal('box1-img-posx', d.box1.posX ?? 50);
+      setVal('box1-img-posy', d.box1.posY ?? 50);
+      setVal('box1-img-zoom', d.box1.zoom ?? 100);
+      initReposition('box1');
+    }
+    setVal('box2-nome', d.box2?.nome);
+    if (d.box2?.img) {
+      showPreview('prev-box2', d.box2.img, 'box2-img-url');
+      setVal('box2-img-posx', d.box2.posX ?? 50);
+      setVal('box2-img-posy', d.box2.posY ?? 50);
+      setVal('box2-img-zoom', d.box2.zoom ?? 100);
+      initReposition('box2');
+    }
+    setVal('box3-nome', d.box3?.nome);
+    if (d.box3?.img) {
+      showPreview('prev-box3', d.box3.img, 'box3-img-url');
+      setVal('box3-img-posx', d.box3.posX ?? 50);
+      setVal('box3-img-posy', d.box3.posY ?? 50);
+      setVal('box3-img-zoom', d.box3.zoom ?? 100);
+      initReposition('box3');
+    }
+
+    // Hero B
+    if (d.heroB) {
+      setVal('herob-titulo', d.heroB.titulo);
+      setVal('herob-subtitulo', d.heroB.subtitulo);
+      setVal('herob-titulo-grande', d.heroB.tituloGrande);
+      setVal('herob-btn', d.heroB.btn);
+      [1,2,3,4,5,6,7,8,9].forEach(i => {
+        const img = d.heroB['foto' + i];
+        if (img) {
+          showPreview('prev-herob-foto' + i, img, 'herob-foto' + i + '-url');
+          setVal('herob-foto' + i + '-img-posx', d.heroB['foto' + i + 'PosX'] ?? 50);
+          setVal('herob-foto' + i + '-img-posy', d.heroB['foto' + i + 'PosY'] ?? 50);
+          setVal('herob-foto' + i + '-img-zoom', d.heroB['foto' + i + 'Zoom'] ?? 100);
+          initReposition('herob-foto' + i);
+        }
+      });
+    }
+
+    // Categorias
+    ['vestidos','conjuntos','blusas','calcas','casacos'].forEach(cat => {
+      const img = d.categorias?.[cat]?.img;
+      if (img) {
+        showPreview('prev-cat-' + cat, img, 'cat-' + cat + '-img-url');
+        setVal('cat-' + cat + '-img-posx', d.categorias[cat].posX ?? 50);
+        setVal('cat-' + cat + '-img-posy', d.categorias[cat].posY ?? 50);
+        setVal('cat-' + cat + '-img-zoom', d.categorias[cat].zoom ?? 100);
+        initReposition('cat-' + cat);
+      }
+    });
+
+    // Depoimentos
+    if (d.depoimentos && Array.isArray(d.depoimentos) && d.depoimentos.length > 0) {
+      depoimentos = d.depoimentos;
+    }
+    renderDepoimentosAdmin();
+    const depAtivo = document.getElementById('dep-ativo');
+    if (depAtivo) depAtivo.checked = d.depoimentosAtivo !== false;
+
+    // Instagram
+    const igAtivo = document.getElementById('ig-ativo');
+    if (igAtivo) igAtivo.checked = !!d.instagram?.ativo;
+    if (Array.isArray(d.instagram?.posts) && d.instagram.posts.length > 0) {
+      igPosts = d.instagram.posts;
+    }
+    renderIgPostsAdmin();
+
+    // Faixa
+    if (d.faixa && Array.isArray(d.faixa)) {
+      setVal('faixa-itens', d.faixa.join('\n'));
+    }
+
+    // Boxes
+    ['box1','box2','box3'].forEach(b => {
+      setVal(`${b}-label`, d[b]?.label);
+      setVal(`${b}-nome`, d[b]?.nome);
+      if (d[b]?.img) showPreview(`prev-${b}`, d[b].img, `${b}-img-url`);
+    });
+
+    // Geral
+    setVal('cfg-whatsapp', d.geral?.whatsapp);
+    setVal('cfg-email', d.geral?.email);
+    setVal('cfg-frete-gratis', d.geral?.freteGratis);
+    setVal('cfg-pix-desc', d.geral?.pixDesconto);
+    setVal('cfg-aviso', d.geral?.aviso);
+    setVal('cfg-horario', d.geral?.horario);
+    setVal('cfg-instagram-url', d.geral?.instagramUrl);
+    setVal('cfg-facebook-url', d.geral?.facebookUrl);
+    setVal('cfg-tiktok-url', d.geral?.tiktokUrl);
+
+    // Rodapé
+    setVal('rodape-blurb', d.rodape?.blurb);
+    setVal('rodape-copyright', d.rodape?.copyright);
+
+    // Vantagens / Diferenciais
+    [1, 2, 3, 4].forEach(n => {
+      setVal('trust' + n + '-titulo', d['trust' + n]?.titulo);
+      setVal('trust' + n + '-desc', d['trust' + n]?.desc);
+    });
+
+    // Títulos das seções da home
+    setVal('sec-cat-tag', d.secaoCategorias?.tag);
+    setVal('sec-cat-titulo1', d.secaoCategorias?.titulo1);
+    setVal('sec-cat-titulo2', d.secaoCategorias?.titulo2);
+    setVal('sec-col-tag', d.secaoColecao?.tag);
+    setVal('sec-col-titulo1', d.secaoColecao?.titulo1);
+    setVal('sec-col-titulo2', d.secaoColecao?.titulo2);
+    setVal('sec-col-link', d.secaoColecao?.linkTexto);
+    setVal('sec-dep-tag', d.secaoDepoimentos?.tag);
+    setVal('sec-dep-titulo1', d.secaoDepoimentos?.titulo1);
+    setVal('sec-dep-titulo2', d.secaoDepoimentos?.titulo2);
+    setVal('sec-ig-tag', d.secaoInstagram?.tag);
+    setVal('sec-ig-titulo1', d.secaoInstagram?.titulo1);
+    setVal('sec-ig-titulo2', d.secaoInstagram?.titulo2);
+    setVal('sec-ig-texto', d.secaoInstagram?.texto);
+    setVal('news-tag', d.newsletter?.tag);
+    setVal('news-titulo1', d.newsletter?.titulo1);
+    setVal('news-titulo2', d.newsletter?.titulo2);
+    setVal('news-sub', d.newsletter?.subtitulo);
+    setVal('news-botao', d.newsletter?.botao);
+    setVal('news-privacidade', d.newsletter?.privacidade);
+
+    // Stats
+    setVal('stat1-num', d.stats?.s1num); setVal('stat1-label', d.stats?.s1label);
+    setVal('stat2-num', d.stats?.s2num); setVal('stat2-label', d.stats?.s2label);
+    setVal('stat3-num', d.stats?.s3num); setVal('stat3-label', d.stats?.s3label);
+
+    // Página Sobre
+    const s = d.sobre || {};
+    setVal('sobre-hero-tag', s.heroTag); setVal('sobre-hero-titulo1', s.heroTitulo1);
+    setVal('sobre-hero-titulo2', s.heroTitulo2); setVal('sobre-hero-sub', s.heroSub);
+    [1,2,3,4].forEach(n => {
+      setVal('sobre-stat' + n + '-num', s['stat' + n + 'Num']);
+      setVal('sobre-stat' + n + '-label', s['stat' + n + 'Label']);
+    });
+    setVal('sobre-hist-tag', s.histTag); setVal('sobre-hist-titulo1', s.histTitulo1); setVal('sobre-hist-titulo2', s.histTitulo2);
+    setVal('sobre-hist-texto', s.histTexto);
+    if (s.histImg) {
+      showPreview('prev-sobre-hist', s.histImg, 'sobre-hist-img-url');
+      setVal('sobre-hist-img-posx', s.histImgPosX ?? 50);
+      setVal('sobre-hist-img-posy', s.histImgPosY ?? 50);
+      setVal('sobre-hist-img-zoom', s.histImgZoom ?? 100);
+      initReposition('sobre-hist');
+    }
+    setVal('sobre-hist-quote', s.quote); setVal('sobre-hist-quote-autor', s.quoteAutor);
+    setVal('sobre-hist-sig-nome', s.sigNome); setVal('sobre-hist-sig-cargo', s.sigCargo);
+    setVal('sobre-val-tag', s.valTag); setVal('sobre-val-titulo1', s.valTitulo1); setVal('sobre-val-titulo2', s.valTitulo2);
+    [1,2,3,4,5,6].forEach(n => {
+      setVal('sobre-val' + n + '-icon', s['val' + n + 'Icon']);
+      setVal('sobre-val' + n + '-titulo', s['val' + n + 'Titulo']);
+      setVal('sobre-val' + n + '-desc', s['val' + n + 'Desc']);
+    });
+    setVal('sobre-proc-tag', s.procTag); setVal('sobre-proc-titulo1', s.procTitulo1); setVal('sobre-proc-titulo2', s.procTitulo2);
+    [1,2,3,4].forEach(n => {
+      setVal('sobre-proc' + n + '-icon', s['proc' + n + 'Icon']);
+      setVal('sobre-proc' + n + '-titulo', s['proc' + n + 'Titulo']);
+      setVal('sobre-proc' + n + '-desc', s['proc' + n + 'Desc']);
+      setVal('sobre-dif' + n + '-icon', s['dif' + n + 'Icon']);
+      setVal('sobre-dif' + n + '-titulo', s['dif' + n + 'Titulo']);
+      setVal('sobre-dif' + n + '-desc', s['dif' + n + 'Desc']);
+    });
+    setVal('sobre-dif-tag', s.difTag); setVal('sobre-dif-titulo1', s.difTitulo1); setVal('sobre-dif-titulo2', s.difTitulo2);
+    setVal('sobre-cta-tag', s.ctaTag); setVal('sobre-cta-titulo1', s.ctaTitulo1); setVal('sobre-cta-titulo2', s.ctaTitulo2);
+    setVal('sobre-cta-texto', s.ctaTexto);
+
+  } catch(e) {
+    console.error(e);
+    toast('Erro ao carregar configurações salvas — não clique em Salvar até recarregar a página', 'err');
+  } finally {
+    // Só libera o "Salvar tudo" depois que os dados salvos terminarem de
+    // carregar nos campos — clicar em Salvar antes disso gravaria tudo em
+    // branco por cima do que já existia (foi o que apagou hero/categorias/
+    // caixas em 18/06/2026).
+    const btn = document.getElementById('btn-salvar');
+    if (btn) { btn.disabled = false; document.getElementById('btn-txt').textContent = '💾 Salvar tudo'; }
+  }
+}
+
+// ── MONTA O OBJETO DE CONFIGURAÇÃO ──
+// Usado tanto para salvar de verdade (salvarTudo) quanto para o preview ao
+// vivo (que só manda os dados pro iframe, sem tocar no Firestore).
+function buildConfigObject() {
+  return {
+    hero: {
+      titulo1:   getVal('hero-titulo1'),
+      titulo2:   getVal('hero-titulo2'),
+      titulo1b:  getVal('hero-titulo1b'),
+      titulo2b:  getVal('hero-titulo2b'),
+      tituloRotativo: document.getElementById('hero-titulo-rotativo')?.checked || false,
+      subtitulo: getVal('hero-subtitulo'),
+      btn:       getVal('hero-btn'),
+      label:     getVal('hero-label'),
+      img:       getVal('hero-img-url'),
+      imgFundo:  getVal('hero-foto-fundo-url'),
+      imgFundoPosX: Number(getVal('hero-foto-fundo-img-posx')) || 50,
+      imgFundoPosY: Number(getVal('hero-foto-fundo-img-posy')) || 50,
+      imgFundoZoom: Number(getVal('hero-foto-fundo-img-zoom')) || 100,
+      posX:      Number(getVal('hero-img-posx')) || 50,
+      posY:      Number(getVal('hero-img-posy')) || 50,
+      zoom:      Number(getVal('hero-img-zoom')) || 100,
+      imgMobile: getVal('hero-img-mobile-url'),
+      imgMobilePosX: Number(getVal('hero-mobile-img-posx')) || 50,
+      imgMobilePosY: Number(getVal('hero-mobile-img-posy')) || 50,
+      imgMobileZoom: Number(getVal('hero-mobile-img-zoom')) || 100,
+      estilo:    document.querySelector('input[name="hero-estilo"]:checked')?.value || 'editorial',
+    },
+    box1: { label: getVal('box1-label'), nome: getVal('box1-nome'), img: getVal('box1-img-url'), posX: Number(getVal('box1-img-posx')) || 50, posY: Number(getVal('box1-img-posy')) || 50, zoom: Number(getVal('box1-img-zoom')) || 100 },
+    box2: { nome: getVal('box2-nome'), img: getVal('box2-img-url'), posX: Number(getVal('box2-img-posx')) || 50, posY: Number(getVal('box2-img-posy')) || 50, zoom: Number(getVal('box2-img-zoom')) || 100 },
+    box3: { nome: getVal('box3-nome'), img: getVal('box3-img-url'), posX: Number(getVal('box3-img-posx')) || 50, posY: Number(getVal('box3-img-posy')) || 50, zoom: Number(getVal('box3-img-zoom')) || 100 },
+    faixa: getVal('faixa-itens').split('\n').map(s => s.trim()).filter(Boolean),
+    depoimentos: Array.from(document.querySelectorAll('#depoimentos-lista .dep-row')).map(row => ({
+      nome: row.querySelector('.dep-nome').value.trim(),
+      cidade: row.querySelector('.dep-cidade').value.trim(),
+      texto: row.querySelector('.dep-texto').value.trim(),
+      estrelas: Number(row.querySelector('.dep-estrelas').value) || 5,
+      foto: row.querySelector('.dep-foto-url').value || null,
+      fotoPosX: Number(row.querySelector('.dep-foto-posx')?.value) || 50,
+      fotoPosY: Number(row.querySelector('.dep-foto-posy')?.value) || 50,
+      fotoZoom: Number(row.querySelector('.dep-foto-zoom')?.value) || 100,
+    })).filter(d => d.nome && d.texto),
+    depoimentosAtivo: document.getElementById('dep-ativo')?.checked ?? true,
+    instagram: {
+      ativo: document.getElementById('ig-ativo')?.checked || false,
+      posts: Array.from(document.querySelectorAll('#ig-posts-lista input')).map(el => el.value.trim()).filter(Boolean),
+    },
+
+    geral: {
+      whatsapp:     getVal('cfg-whatsapp'),
+      email:        getVal('cfg-email'),
+      freteGratis:  Number(getVal('cfg-frete-gratis')) || 299,
+      pixDesconto:  Number(getVal('cfg-pix-desc')) || 5,
+      aviso:        getVal('cfg-aviso'),
+      horario:      getVal('cfg-horario'),
+      instagramUrl: getVal('cfg-instagram-url'),
+      facebookUrl:  getVal('cfg-facebook-url'),
+      tiktokUrl:    getVal('cfg-tiktok-url'),
+    },
+    rodape: {
+      blurb:     getVal('rodape-blurb'),
+      copyright: getVal('rodape-copyright'),
+    },
+    trust1: { titulo: getVal('trust1-titulo'), desc: getVal('trust1-desc') },
+    trust2: { titulo: getVal('trust2-titulo'), desc: getVal('trust2-desc') },
+    trust3: { titulo: getVal('trust3-titulo'), desc: getVal('trust3-desc') },
+    trust4: { titulo: getVal('trust4-titulo'), desc: getVal('trust4-desc') },
+    secaoCategorias: { tag: getVal('sec-cat-tag'), titulo1: getVal('sec-cat-titulo1'), titulo2: getVal('sec-cat-titulo2') },
+    secaoColecao: { tag: getVal('sec-col-tag'), titulo1: getVal('sec-col-titulo1'), titulo2: getVal('sec-col-titulo2'), linkTexto: getVal('sec-col-link') },
+    secaoDepoimentos: { tag: getVal('sec-dep-tag'), titulo1: getVal('sec-dep-titulo1'), titulo2: getVal('sec-dep-titulo2') },
+    secaoInstagram: { tag: getVal('sec-ig-tag'), titulo1: getVal('sec-ig-titulo1'), titulo2: getVal('sec-ig-titulo2'), texto: getVal('sec-ig-texto') },
+    newsletter: {
+      tag: getVal('news-tag'), titulo1: getVal('news-titulo1'), titulo2: getVal('news-titulo2'),
+      subtitulo: getVal('news-sub'), botao: getVal('news-botao'), privacidade: getVal('news-privacidade'),
+    },
+    stats: {
+      s1num: getVal('stat1-num'), s1label: getVal('stat1-label'),
+      s2num: getVal('stat2-num'), s2label: getVal('stat2-label'),
+      s3num: getVal('stat3-num'), s3label: getVal('stat3-label'),
+    },
+    heroB: {
+      titulo:        getVal('herob-titulo'),
+      subtitulo:     getVal('herob-subtitulo'),
+      tituloGrande:  getVal('herob-titulo-grande'),
+      btn:           getVal('herob-btn'),
+      ...[1,2,3,4,5,6,7,8,9].reduce((acc, i) => {
+        acc['foto' + i] = getVal('herob-foto' + i + '-url');
+        acc['foto' + i + 'PosX'] = Number(getVal('herob-foto' + i + '-img-posx')) || 50;
+        acc['foto' + i + 'PosY'] = Number(getVal('herob-foto' + i + '-img-posy')) || 50;
+        acc['foto' + i + 'Zoom'] = Number(getVal('herob-foto' + i + '-img-zoom')) || 100;
+        return acc;
+      }, {}),
+    },
+    categorias: {
+      vestidos:     { img: getVal('cat-vestidos-img-url'), posX: Number(getVal('cat-vestidos-img-posx')) || 50, posY: Number(getVal('cat-vestidos-img-posy')) || 50, zoom: Number(getVal('cat-vestidos-img-zoom')) || 100 },
+      conjuntos:   { img: getVal('cat-conjuntos-img-url'), posX: Number(getVal('cat-conjuntos-img-posx')) || 50, posY: Number(getVal('cat-conjuntos-img-posy')) || 50, zoom: Number(getVal('cat-conjuntos-img-zoom')) || 100 },
+      blusas: { img: getVal('cat-blusas-img-url'), posX: Number(getVal('cat-blusas-img-posx')) || 50, posY: Number(getVal('cat-blusas-img-posy')) || 50, zoom: Number(getVal('cat-blusas-img-zoom')) || 100 },
+      calcas:   { img: getVal('cat-calcas-img-url'), posX: Number(getVal('cat-calcas-img-posx')) || 50, posY: Number(getVal('cat-calcas-img-posy')) || 50, zoom: Number(getVal('cat-calcas-img-zoom')) || 100 },
+      casacos: { img: getVal('cat-casacos-img-url'), posX: Number(getVal('cat-casacos-img-posx')) || 50, posY: Number(getVal('cat-casacos-img-posy')) || 50, zoom: Number(getVal('cat-casacos-img-zoom')) || 100 },
+    },
+    sobre: {
+      heroTag: getVal('sobre-hero-tag'), heroTitulo1: getVal('sobre-hero-titulo1'),
+      heroTitulo2: getVal('sobre-hero-titulo2'), heroSub: getVal('sobre-hero-sub'),
+      ...[1,2,3,4].reduce((acc, n) => {
+        acc['stat' + n + 'Num'] = getVal('sobre-stat' + n + '-num');
+        acc['stat' + n + 'Label'] = getVal('sobre-stat' + n + '-label');
+        return acc;
+      }, {}),
+      histTag: getVal('sobre-hist-tag'), histTitulo1: getVal('sobre-hist-titulo1'), histTitulo2: getVal('sobre-hist-titulo2'),
+      histTexto: getVal('sobre-hist-texto'),
+      histImg: getVal('sobre-hist-img-url'),
+      histImgPosX: Number(getVal('sobre-hist-img-posx')) || 50,
+      histImgPosY: Number(getVal('sobre-hist-img-posy')) || 50,
+      histImgZoom: Number(getVal('sobre-hist-img-zoom')) || 100,
+      quote: getVal('sobre-hist-quote'), quoteAutor: getVal('sobre-hist-quote-autor'),
+      sigNome: getVal('sobre-hist-sig-nome'), sigCargo: getVal('sobre-hist-sig-cargo'),
+      valTag: getVal('sobre-val-tag'), valTitulo1: getVal('sobre-val-titulo1'), valTitulo2: getVal('sobre-val-titulo2'),
+      ...[1,2,3,4,5,6].reduce((acc, n) => {
+        acc['val' + n + 'Icon'] = getVal('sobre-val' + n + '-icon');
+        acc['val' + n + 'Titulo'] = getVal('sobre-val' + n + '-titulo');
+        acc['val' + n + 'Desc'] = getVal('sobre-val' + n + '-desc');
+        return acc;
+      }, {}),
+      procTag: getVal('sobre-proc-tag'), procTitulo1: getVal('sobre-proc-titulo1'), procTitulo2: getVal('sobre-proc-titulo2'),
+      difTag: getVal('sobre-dif-tag'), difTitulo1: getVal('sobre-dif-titulo1'), difTitulo2: getVal('sobre-dif-titulo2'),
+      ...[1,2,3,4].reduce((acc, n) => {
+        acc['proc' + n + 'Icon'] = getVal('sobre-proc' + n + '-icon');
+        acc['proc' + n + 'Titulo'] = getVal('sobre-proc' + n + '-titulo');
+        acc['proc' + n + 'Desc'] = getVal('sobre-proc' + n + '-desc');
+        acc['dif' + n + 'Icon'] = getVal('sobre-dif' + n + '-icon');
+        acc['dif' + n + 'Titulo'] = getVal('sobre-dif' + n + '-titulo');
+        acc['dif' + n + 'Desc'] = getVal('sobre-dif' + n + '-desc');
+        return acc;
+      }, {}),
+      ctaTag: getVal('sobre-cta-tag'), ctaTitulo1: getVal('sobre-cta-titulo1'), ctaTitulo2: getVal('sobre-cta-titulo2'),
+      ctaTexto: getVal('sobre-cta-texto'),
+    },
+  };
+}
+
+// ── SALVAR ──
+window.salvarTudo = async function() {
+  const btn = document.getElementById('btn-salvar');
+  const txt = document.getElementById('btn-txt');
+  btn.disabled = true;
+  txt.innerHTML = '<div class="spinner"></div> Salvando...';
+
+  try {
+    // Upload imagens pendentes
+    await uploadPendentes();
+
+    const dados = buildConfigObject();
+    dados.atualizadoEm = new Date().toISOString();
+
+    await setDoc(doc(db, 'configuracoes', 'loja'), dados, { merge: true });
+    toast('✅ Configurações salvas!', 'ok');
+
+  } catch(e) {
+    console.error(e);
+    toast('Erro ao salvar. Tente novamente.', 'err');
+  } finally {
+    btn.disabled = false;
+    txt.textContent = '💾 Salvar tudo';
+  }
+};
+
+// ── UPLOAD CLOUDINARY ──
+const uploadQueue = {}; // fieldId → File
+
+window.previewImg = function(input, previewId, areaId, fieldId) {
+  const file = input.files[0];
+  if (!file) return;
+  uploadQueue[fieldId] = file;
+  const url = URL.createObjectURL(file);
+  showPreview(previewId, url, fieldId);
+};
+
+function showPreview(previewId, url, fieldId) {
+  const img = document.getElementById(previewId);
+  if (!img) return;
+  img.src = url;
+  img.style.display = 'block';
+  const field = document.getElementById(fieldId);
+  if (field && url.startsWith('http')) field.value = url;
+}
+
+// ── REPOSICIONAR FOTO (arrastar + zoom dentro da moldura) ──
+// O estado (posX/posY/zoom) vive num objeto persistente por campo — não em
+// variáveis locais da função — porque initReposition roda de novo toda vez
+// que uma foto é trocada, e as variáveis locais de uma chamada antiga
+// ficavam "presas" nos listeners de arraste já ligados, causando um salto
+// estranho se a foto fosse trocada e a posição resetada depois.
+const repositionState = {};
+
+window.initReposition = function(fieldPrefix) {
+  const wrap = document.getElementById('reposition-wrap-' + fieldPrefix);
+  const frame = document.getElementById('reposition-frame-' + fieldPrefix);
+  const img = document.getElementById('reposition-img-' + fieldPrefix);
+  const hiddenX = document.getElementById(fieldPrefix + '-img-posx');
+  const hiddenY = document.getElementById(fieldPrefix + '-img-posy');
+  const hiddenZoom = document.getElementById(fieldPrefix + '-img-zoom');
+  const smallPreview = document.getElementById('prev-' + fieldPrefix);
+  if (!wrap || !frame || !img || !smallPreview || !smallPreview.src) return;
+
+  img.src = smallPreview.src;
+  wrap.classList.add('active');
+  // A prévia estática dentro da área de upload fica redundante e sem
+  // interação depois que a moldura de arrastar+zoom aparece — some com ela
+  // pra não ter duas fotos parecidas na tela e o usuário tentar arrastar a
+  // errada (foi exatamente o que aconteceu: a de cima nunca teve drag).
+  smallPreview.style.display = 'none';
+
+  let state = repositionState[fieldPrefix];
+  if (!state) {
+    state = repositionState[fieldPrefix] = {
+      posX: Number(hiddenX?.value) || 50,
+      posY: Number(hiddenY?.value) || 50,
+      zoom: Number(hiddenZoom?.value) || 100,
+    };
+  }
+
+  function applyPos() {
+    img.style.objectPosition = state.posX.toFixed(1) + '% ' + state.posY.toFixed(1) + '%';
+    img.style.transform = 'scale(' + (state.zoom / 100) + ')';
+    if (hiddenX) hiddenX.value = state.posX.toFixed(1);
+    if (hiddenY) hiddenY.value = state.posY.toFixed(1);
+    if (hiddenZoom) hiddenZoom.value = state.zoom.toFixed(0);
+  }
+  state.applyPos = applyPos;
+  applyPos();
+
+  state.reset = () => { state.posX = 50; state.posY = 50; state.zoom = 100; applyPos(); };
+  state.setZoom = (v) => { state.zoom = Math.min(300, Math.max(100, Number(v))); applyPos(); };
+
+  if (frame.dataset.repositionBound) return;
+  frame.dataset.repositionBound = '1';
+
+  let dragging = false, startClientX = 0, startClientY = 0, startPosX = 50, startPosY = 50;
+
+  frame.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    frame.classList.add('dragging');
+    startClientX = e.clientX;
+    startClientY = e.clientY;
+    startPosX = state.posX;
+    startPosY = state.posY;
+    frame.setPointerCapture(e.pointerId);
+  });
+
+  frame.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const Cw = frame.clientWidth, Ch = frame.clientHeight;
+    const Iw = img.naturalWidth, Ih = img.naturalHeight;
+    if (!Iw || !Ih || !Cw || !Ch) return;
+    // O arraste sempre opera no enquadramento "cover" base (zoom=100%); o
+    // zoom é uma ampliação visual aplicada por cima (transform:scale),
+    // então arrastar continua funcionando igual em qualquer nível de zoom.
+    const scale = Math.max(Cw / Iw, Ch / Ih);
+    const overflowX = Iw * scale - Cw;
+    const overflowY = Ih * scale - Ch;
+    const dx = e.clientX - startClientX;
+    const dy = e.clientY - startClientY;
+    if (overflowX > 0.5) {
+      const startOffsetX = overflowX * (startPosX / 100);
+      const newOffsetX = Math.min(overflowX, Math.max(0, startOffsetX - dx));
+      state.posX = (newOffsetX / overflowX) * 100;
+    }
+    if (overflowY > 0.5) {
+      const startOffsetY = overflowY * (startPosY / 100);
+      const newOffsetY = Math.min(overflowY, Math.max(0, startOffsetY - dy));
+      state.posY = (newOffsetY / overflowY) * 100;
+    }
+    state.applyPos();
+  });
+
+  function endDrag() { dragging = false; frame.classList.remove('dragging'); }
+  frame.addEventListener('pointerup', endDrag);
+  frame.addEventListener('pointercancel', endDrag);
+};
+
+window.resetReposition = function(fieldPrefix) {
+  repositionState[fieldPrefix]?.reset();
+};
+
+window.setZoomReposition = function(fieldPrefix, value) {
+  repositionState[fieldPrefix]?.setZoom(value);
+};
+
+window.zoomStep = function(fieldPrefix, delta) {
+  const state = repositionState[fieldPrefix];
+  if (!state) return;
+  state.setZoom(state.zoom + delta);
+};
+
+// Gera o HTML de arrastar+zoom pra campos que não escrevem essa moldura na
+// mão no HTML (evita repetir a mesma marcação 9+ vezes) — usado a partir de
+// um placeholder vazio: div.reposition-slot com data-field e data-style.
+function repositionMarkup(fieldPrefix, style) {
+  return `
+    <div class="reposition-wrap" id="reposition-wrap-${fieldPrefix}">
+      <div class="reposition-frame" id="reposition-frame-${fieldPrefix}" style="${style || ''}">
+        <img id="reposition-img-${fieldPrefix}" alt="">
+        <div class="reposition-zoom-btns">
+          <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('${fieldPrefix}', -10)">−</button>
+          <button type="button" class="reposition-zoom-btn" onpointerdown="event.stopPropagation()" onclick="zoomStep('${fieldPrefix}', 10)">+</button>
+        </div>
+      </div>
+      <div class="reposition-controls">
+        <span class="reposition-hint">↔ Arraste e use +/− pra ajustar</span>
+        <button type="button" class="btn-reposition-reset" onclick="resetReposition('${fieldPrefix}')">Centralizar</button>
+      </div>
+    </div>
+    <input type="hidden" id="${fieldPrefix}-img-posx" value="50">
+    <input type="hidden" id="${fieldPrefix}-img-posy" value="50">
+    <input type="hidden" id="${fieldPrefix}-img-zoom" value="100">
+  `;
+}
+
+function initRepositionSlots(root) {
+  (root || document).querySelectorAll('.reposition-slot').forEach(slot => {
+    slot.outerHTML = repositionMarkup(slot.dataset.field, slot.dataset.style);
+  });
+}
+
+function buildHerobPhotoSlots() {
+  const grid = document.getElementById('herob-photos-grid');
+  if (!grid || grid.dataset.built) return;
+  grid.dataset.built = '1';
+  grid.innerHTML = [1,2,3,4,5,6,7,8,9].map(n => `
+    <div>
+      <p style="font-size:0.7rem;font-weight:600;color:var(--brown);margin-bottom:0.3rem;">Foto ${n}</p>
+      <div class="img-upload-area" id="area-herob-foto${n}" style="padding:0.7rem;">
+        <input type="file" accept="image/*" onchange="previewImg(this,'prev-herob-foto${n}','area-herob-foto${n}','herob-foto${n}-url'); initReposition('herob-foto${n}')" />
+        <div class="upload-icon" style="font-size:1.1rem;margin-bottom:0.2rem;">📷</div>
+        <p style="font-size:0.6rem;">Vertical, ex: 800×1200px</p>
+        <img id="prev-herob-foto${n}" class="img-preview" style="max-height:100px;" />
+      </div>
+      <input type="hidden" id="herob-foto${n}-url" />
+      <div class="reposition-slot" data-field="herob-foto${n}" data-style="aspect-ratio:2/3;"></div>
+    </div>
+  `).join('');
+  initRepositionSlots(grid);
+}
+buildHerobPhotoSlots();
+initRepositionSlots();
+
+async function uploadPendentes() {
+  for (const [fieldId, file] of Object.entries(uploadQueue)) {
+    const url = await uploadCloudinary(file);
+    if (url) {
+      document.getElementById(fieldId).value = url;
+      delete uploadQueue[fieldId];
+    }
+  }
+}
+
+async function uploadCloudinary(file) {
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('upload_preset', CLOUDINARY_PRESET);
+  fd.append('folder', 'jeh-correa/config');
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body:fd });
+  const data = await res.json();
+  return data.secure_url || null;
+}
+
+// ── HELPERS ──
+function getVal(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function setVal(id, val) { const el = document.getElementById(id); if (el && val !== undefined && val !== null) el.value = val; }
+
+function toast(msg, tipo) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${tipo} show`;
+  setTimeout(() => t.className = 'toast', 3500);
+}
+
+// ── PÁGINA SOBRE: clicar no lapisinho foca o campo de texto ao lado ──
+document.addEventListener('click', e => {
+  const pencil = e.target.closest('.ed-pencil');
+  if (!pencil) return;
+  const field = pencil.previousElementSibling;
+  if (field && (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA')) {
+    field.focus();
+    field.select?.();
+  }
+});
+
+// Negrito nos campos de texto longo (ex: "Nossa história"): envolve a seleção
+// em **marcadores**, que o site-config.js converte pra <strong> na exibição.
+window.wrapBold = function(id) {
+  const ta = document.getElementById(id);
+  if (!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  if (start === end) { ta.focus(); return; }
+  const val = ta.value;
+  const selected = val.slice(start, end);
+  const already = selected.startsWith('**') && selected.endsWith('**') && selected.length > 3;
+  const newSel = already ? selected.slice(2, -2) : '**' + selected + '**';
+  ta.value = val.slice(0, start) + newSel + val.slice(end);
+  ta.focus();
+  ta.setSelectionRange(start, start + newSel.length);
+  ta.dispatchEvent(new Event('input', { bubbles: true }));
+};
+
+// ── ACCORDION ──
+window.toggleCard = function(headerEl) {
+  const card = headerEl.closest('.config-card');
+  const wasCollapsed = card?.classList.contains('collapsed');
+  card?.classList.toggle('collapsed');
+  if (wasCollapsed) scrollPreviewTo(card.dataset.previewTarget, card.dataset.previewPage);
+};
+
+// ── PREVIEW AO VIVO ──
+const PREVIEW_PAGE_LABELS = { 'index.html': 'Página Inicial', 'sobre.html': 'Página Sobre' };
+let currentPreviewPage = 'index.html';
+
+function getPreviewFrame() {
+  const iframe = document.getElementById('preview-iframe');
+  return iframe?.contentWindow || null;
+}
+
+function updatePreviewChrome(page) {
+  const label = document.getElementById('preview-select-label');
+  const url = document.getElementById('preview-chrome-url');
+  const openLink = document.getElementById('preview-open-link');
+  if (label) label.textContent = PREVIEW_PAGE_LABELS[page] || page;
+  if (url) url.textContent = 'SEU-DOMINIO-AQUI.com.br' + (page === 'index.html' ? '' : '/' + page);
+  if (openLink) openLink.href = '../' + page;
+}
+
+// Troca a página exibida no preview quando o campo editado pertence a outra
+// página do site (ex: "Página Sobre") — só recarrega o iframe se precisar.
+function ensurePreviewPage(page, cb) {
+  page = page || 'index.html';
+  const iframe = document.getElementById('preview-iframe');
+  if (!iframe) return;
+  if (currentPreviewPage === page) { cb && cb(); return; }
+  currentPreviewPage = page;
+  updatePreviewChrome(page);
+  const onLoad = () => {
+    iframe.removeEventListener('load', onLoad);
+    setTimeout(() => { sendPreviewDraft(); cb && cb(); }, 250);
+  };
+  iframe.addEventListener('load', onLoad);
+  iframe.src = '../' + page;
+}
+
+function scrollPreviewTo(selector, page) {
+  if (!selector) return;
+  ensurePreviewPage(page, () => {
+    const win = getPreviewFrame();
+    if (win) win.postMessage({ __scrollTo: selector }, window.location.origin);
+  });
+}
+
+function sendPreviewDraft() {
+  const win = getPreviewFrame();
+  if (!win) return;
+  win.postMessage({ __previewDraft: true, config: buildConfigObject() }, window.location.origin);
+}
+
+let previewDebounce = null;
+function schedulePreviewDraft() {
+  clearTimeout(previewDebounce);
+  previewDebounce = setTimeout(sendPreviewDraft, 200);
+}
+
+// Mostra, em cada campo/seção que só vale para um "Estilo do Banner"
+// específico, se ele está em uso agora ou só passa a valer ao trocar o
+// estilo (evita a duvida de "por que tem 2 fotos grandes aqui?").
+const ESTILO_BANNER_LABELS = { editorial: 'Editorial', fullscreen: 'Fullscreen', foto: 'Foto Cheia' };
+function updateBannerUsageBadges() {
+  const estiloAtual = document.querySelector('input[name="hero-estilo"]:checked')?.value || 'editorial';
+  document.querySelectorAll('.usage-badge[data-usage-for]').forEach(badge => {
+    const usaNoEstilo = badge.dataset.usageFor;
+    if (usaNoEstilo === estiloAtual) {
+      badge.textContent = '✓ Em uso agora';
+      badge.className = 'usage-badge usage-active';
+    } else {
+      badge.textContent = `Só aparece no estilo "${ESTILO_BANNER_LABELS[usaNoEstilo] || usaNoEstilo}"`;
+      badge.className = 'usage-badge usage-inactive';
+    }
+  });
+  // Esconde os campos de foto que não valem pro estilo escolhido agora —
+  // menos coisa na tela pra decidir (card do Hero tinha 3 uploads sempre
+  // visíveis mesmo só um valendo pro estilo ativo).
+  document.querySelectorAll('.form-group[data-usage-for]').forEach(el => {
+    el.style.display = (el.dataset.usageFor === estiloAtual) ? '' : 'none';
+  });
+}
+
+function updateHeroAltPhraseVisibility() {
+  const checked = document.getElementById('hero-titulo-rotativo')?.checked;
+  document.getElementById('hero-alt-phrase-block')?.classList.toggle('is-open', !!checked);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateBannerUsageBadges();
+  document.querySelectorAll('input[name="hero-estilo"]').forEach(r => r.addEventListener('change', updateBannerUsageBadges));
+
+  updateHeroAltPhraseVisibility();
+  document.getElementById('hero-titulo-rotativo')?.addEventListener('change', updateHeroAltPhraseVisibility);
+
+  const cardsCol = document.querySelector('.cards-col');
+  if (!cardsCol) return;
+
+  // Qualquer digitação/seleção manda o rascunho pro preview
+  cardsCol.addEventListener('input', schedulePreviewDraft);
+  cardsCol.addEventListener('change', schedulePreviewDraft);
+
+  // Focar um campo dentro de uma subseção (ex: "Newsletter" dentro de
+  // "Títulos das Seções") rola o preview até aquela seção específica
+  cardsCol.addEventListener('focusin', e => {
+    const sub = e.target.closest('[data-preview-target]');
+    if (sub) scrollPreviewTo(sub.dataset.previewTarget, sub.closest('[data-preview-page]')?.dataset.previewPage);
+  });
+
+  // Preview carrega depois do painel — manda o rascunho atual assim que o
+  // iframe terminar de carregar, caso ela já tenha digitado algo antes.
+  const iframe = document.getElementById('preview-iframe');
+  if (iframe) iframe.addEventListener('load', () => setTimeout(sendPreviewDraft, 300));
+});
+
+// ── DEPOIMENTOS ──
+// Mesmo padrão não-destrutivo do Instagram: cada linha existente nunca é
+// recriada via innerHTML em massa, então a foto/texto já preenchidos em
+// outra linha não se perdem ao adicionar ou remover um depoimento.
+let depoimentos = [
+  { nome: 'Ana Martins', cidade: 'Florianópolis, SC', texto: 'Recebi o vestido de aniversário e fiquei encantada. A embalagem é linda, a peça é impecável. Com certeza voltarei a comprar!', estrelas: 5 },
+  { nome: 'Juliana Silva', cidade: 'Balneário Camboriú, SC', texto: 'Comprei o conjunto sob medida e ficou perfeito. O atendimento foi incrível, super atencioso do início ao fim. Recomendo demais!', estrelas: 5 },
+  { nome: 'Camila Ferreira', cidade: 'Itajaí, SC', texto: 'Presente perfeito para minha mãe. Ela amou o conjunto de blusa e saia. Qualidade incrível, superou todas as expectativas!', estrelas: 5 },
+];
+let depUidCounter = 0;
+
+function depRowHTML(d) {
+  d = d || {};
+  const uid = depUidCounter++;
+  const nome = (d.nome || '').replace(/"/g, '&quot;');
+  const cidade = (d.cidade || '').replace(/"/g, '&quot;');
+  const texto = d.texto || '';
+  const estrelas = d.estrelas || 5;
+  const foto = d.foto || '';
+  return `
+    <div class="dep-row" style="border:1px solid var(--gold-pale);border-radius:8px;padding:1rem;margin-bottom:0.75rem;background:var(--cream);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+        <span style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-s);">Depoimento</span>
+        <button type="button" class="dep-remove" title="Remover depoimento" style="background:none;border:none;cursor:pointer;color:var(--text-s);opacity:0.5;font-size:1rem;padding:0.3rem;transition:opacity .15s,color .15s;">✕</button>
+      </div>
+      <div class="form-row" style="margin-bottom:0.5rem;align-items:start;">
+        <div class="form-group" style="margin:0;">
+          <label>Foto (opcional)</label>
+          <div class="img-upload-area" id="area-dep-${uid}" style="padding:0.6rem;">
+            <input type="file" accept="image/*" onchange="previewImg(this,'prev-dep-${uid}','area-dep-${uid}','dep-${uid}-img-url'); initReposition('dep-${uid}')" />
+            <div class="upload-icon" style="font-size:1rem;margin-bottom:0.2rem;">📷</div>
+            <p style="font-size:0.65rem;">Foto da cliente<br><small>Quadrada (1:1), ex: 200×200px</small></p>
+            <img id="prev-dep-${uid}" class="img-preview" style="max-height:70px;${foto ? 'display:block;' : ''}" src="${foto}" />
+          </div>
+          <input type="hidden" id="dep-${uid}-img-url" class="dep-foto-url" value="${foto}" />
+          <input type="hidden" id="dep-${uid}-img-posx" class="dep-foto-posx" value="${d.fotoPosX ?? 50}">
+          <input type="hidden" id="dep-${uid}-img-posy" class="dep-foto-posy" value="${d.fotoPosY ?? 50}">
+          <input type="hidden" id="dep-${uid}-img-zoom" class="dep-foto-zoom" value="${d.fotoZoom ?? 100}">
+          <div class="reposition-slot" data-field="dep-${uid}" data-style="aspect-ratio:1/1;max-width:130px;"></div>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label>Nome</label>
+          <input type="text" class="dep-nome" value="${nome}" />
+          <label style="margin-top:0.5rem;">Cidade</label>
+          <input type="text" class="dep-cidade" value="${cidade}" />
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0.5rem;">
+        <label>Depoimento</label>
+        <textarea class="dep-texto" style="min-height:60px;">${texto}</textarea>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label>Estrelas (1-5)</label>
+        <input type="number" class="dep-estrelas" min="1" max="5" value="${estrelas}" style="width:80px;" />
+      </div>
+    </div>`;
+}
+
+function renderDepoimentosAdmin() {
+  const lista = document.getElementById('depoimentos-lista');
+  if (!lista) return;
+  lista.innerHTML = depoimentos.map(depRowHTML).join('');
+  initRepositionSlots(lista);
+  lista.querySelectorAll('.dep-row').forEach((row, i) => {
+    if (!depoimentos[i]?.foto) return;
+    const wrap = row.querySelector('.reposition-wrap');
+    if (wrap) initReposition(wrap.id.replace('reposition-wrap-', ''));
+  });
+}
+
+window.adicionarDepoimento = function() {
+  const lista = document.getElementById('depoimentos-lista');
+  if (!lista) return;
+  if (lista.children.length >= 6) { toast('Máximo de 6 depoimentos', 'err'); return; }
+  lista.insertAdjacentHTML('beforeend', depRowHTML(null));
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const lista = document.getElementById('depoimentos-lista');
+  if (!lista) return;
+  lista.addEventListener('mouseover', e => { const b = e.target.closest('.dep-remove'); if (b) { b.style.opacity = '1'; b.style.color = 'var(--gold)'; } });
+  lista.addEventListener('mouseout', e => { const b = e.target.closest('.dep-remove'); if (b) { b.style.opacity = '0.5'; b.style.color = 'var(--text-s)'; } });
+  lista.addEventListener('click', e => {
+    const btn = e.target.closest('.dep-remove');
+    if (!btn) return;
+    const row = btn.closest('.dep-row');
+    if (lista.children.length <= 1) {
+      row.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+      return;
+    }
+    row.remove();
+  });
+});
+
+// ── INSTAGRAM ──
+// Cada linha existente nunca é recriada (sem innerHTML em massa) — assim
+// digitação em andamento nunca se perde ao adicionar/remover outra linha.
+let igPosts = [''];
+
+function igRowHTML(url) {
+  return `
+    <div class="ig-post-row" style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.6rem;">
+      <input type="text" value="${(url || '').replace(/"/g, '&quot;')}" placeholder="https://www.instagram.com/p/XXXXXXXXXXX/" style="flex:1;" />
+      <button type="button" class="ig-post-remove" title="Remover link" style="background:none;border:none;cursor:pointer;color:var(--text-s);opacity:0.4;font-size:1rem;padding:0.3rem;transition:opacity .15s,color .15s;">✕</button>
+    </div>`;
+}
+
+function renderIgPostsAdmin() {
+  const lista = document.getElementById('ig-posts-lista');
+  if (!lista) return;
+  lista.innerHTML = igPosts.map(igRowHTML).join('');
+}
+
+window.adicionarIgPost = function() {
+  const lista = document.getElementById('ig-posts-lista');
+  if (!lista) return;
+  if (lista.children.length >= 12) { toast('Máximo de 12 posts', 'err'); return; }
+  lista.insertAdjacentHTML('beforeend', igRowHTML(''));
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const lista = document.getElementById('ig-posts-lista');
+  if (!lista) return;
+  lista.addEventListener('mouseover', e => { const b = e.target.closest('.ig-post-remove'); if (b) { b.style.opacity = '1'; b.style.color = 'var(--gold)'; } });
+  lista.addEventListener('mouseout', e => { const b = e.target.closest('.ig-post-remove'); if (b) { b.style.opacity = '0.4'; b.style.color = 'var(--text-s)'; } });
+  lista.addEventListener('click', e => {
+    const btn = e.target.closest('.ig-post-remove');
+    if (!btn) return;
+    const row = btn.closest('.ig-post-row');
+    if (lista.children.length <= 1) { row.querySelector('input').value = ''; return; }
+    row.remove();
+  });
+});
+
+</script>
+<script src="../assets/js/admin-tour.js?v=1"></script>
+</body>
+</html>

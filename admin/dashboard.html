@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Admin Jeh Corrêa</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --gold:#7C5C35; --gold-mid:#A07848; --gold-light:#C4A47A;
+  --gold-pale:#E0CEBB; --cream:#F5F0EA; --cream-d:#EDE4DA;
+  --brown:#3D2B1A; --brown-m:#5C3D28; --text:#2A1F14;
+  --text-m:#5A4030; --text-s:#9C8070; --white:#FEFCF9;
+  --sidebar:240px; --green:#2D6A4F; --green-l:#E8F5F0;
+  --red:#C53030; --red-l:#FFF5F5; --blue:#2B6CB0; --blue-l:#EBF8FF;
+}
+body { font-family:'Jost',sans-serif; background:var(--cream); color:var(--text); display:flex; min-height:100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar);
+  background: var(--brown);
+  min-height: 100vh;
+  position: fixed;
+  top:0; left:0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+.sidebar-logo {
+  padding: 1.8rem 1.5rem;
+  border-bottom: 1px solid rgba(196,164,122,0.15);
+}
+.sidebar-logo .brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  display: block;
+}
+.sidebar-logo .tag {
+  font-size: 0.52rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-top: 0.2rem;
+  display: block;
+}
+.sidebar-nav { flex:1; padding: 1rem 0; overflow-y: auto; }
+.nav-section-title {
+  font-size: 0.5rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  padding: 0.8rem 1.5rem 0.4rem;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--gold-light); background: rgba(255,255,255,0.03); }
+.nav-item.active {
+  color: var(--gold-light);
+  background: rgba(196,164,122,0.08);
+  border-left-color: var(--gold);
+}
+.nav-item .icon { font-size: 1rem; flex-shrink:0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--gold);
+  color: var(--white);
+  font-size: 0.5rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+.sidebar-footer {
+  padding: 1.2rem 1.5rem;
+  border-top: 1px solid rgba(196,164,122,0.12);
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+.user-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items:center; justify-content:center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  color: var(--white);
+  font-style: italic;
+  flex-shrink: 0;
+}
+.user-name { font-size:0.72rem; color:var(--gold-light); font-weight:400; }
+.user-email { font-size:0.58rem; color:rgba(255,255,255,0.25); margin-top:0.1rem; }
+.btn-logout {
+  width:100%;
+  padding:0.55rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(196,164,122,0.15);
+  color: rgba(255,255,255,0.4);
+  font-family:'Jost',sans-serif;
+  font-size:0.6rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-logout:hover { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); }
+
+/* ── MAIN ── */
+.main {
+  margin-left: var(--sidebar);
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  transition: margin-left 0.3s ease;
+}
+body.sidebar-collapsed .sidebar { transform: translateX(-100%); }
+body.sidebar-collapsed .main { margin-left: 0; }
+
+/* TOP BAR */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gold-pale);
+  padding: 0 2rem;
+  height: 64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.topbar-left { display:flex; align-items:center; gap:1rem; }
+.topbar-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem;
+  font-weight:300;
+  color:var(--brown);
+}
+.topbar-right { display:flex; align-items:center; gap:1rem; }
+.btn-new-product {
+  display:flex; align-items:center; gap:0.5rem;
+  padding:0.55rem 1.2rem;
+  background:var(--gold);
+  color:var(--white);
+  border:none;
+  font-family:'Jost',sans-serif;
+  font-size:0.62rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:background 0.2s;
+  text-decoration:none;
+}
+.btn-new-product:hover { background:var(--brown-m); }
+.btn-stats {
+  display:flex; align-items:center; gap:0.5rem;
+  padding:0.55rem 1.2rem;
+  background:none;
+  color:var(--gold);
+  border:1px solid var(--gold-pale);
+  font-family:'Jost',sans-serif;
+  font-size:0.62rem;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-decoration:none;
+}
+.btn-stats:hover { background:var(--cream); border-color:var(--gold); }
+
+/* CONTENT */
+.content { padding:2rem; flex:1; }
+
+/* STATS GRID */
+.stats-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1rem;
+  margin-bottom:2rem;
+}
+.stat-card {
+  background:var(--white);
+  border:1px solid var(--gold-pale);
+  padding:1.5rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+.stat-label {
+  font-size:0.58rem;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--text-s);
+}
+.stat-value {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem;
+  font-weight:300;
+  color:var(--brown);
+  line-height:1;
+}
+.stat-change {
+  font-size:0.65rem;
+  color:var(--text-s);
+  letter-spacing:0.05em;
+}
+.stat-change.up { color:var(--green); }
+.stat-change.down { color:var(--red); }
+.stat-icon {
+  font-size:1.5rem;
+  opacity:0.15;
+  align-self:flex-end;
+  margin-top:-2rem;
+}
+
+/* SECTION HEADER */
+.section-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:1.2rem;
+}
+.section-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;
+  font-weight:400;
+  color:var(--brown);
+}
+.btn-sm {
+  padding:0.4rem 1rem;
+  font-size:0.6rem;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  font-family:'Jost',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+  border:1px solid var(--gold-pale);
+  background:var(--white);
+  color:var(--text-m);
+  text-decoration:none;
+  display:inline-block;
+}
+.btn-sm:hover { background:var(--gold); color:var(--white); border-color:var(--gold); }
+
+/* PRODUCTS TABLE */
+.table-wrap {
+  background:var(--white);
+  border:1px solid var(--gold-pale);
+  overflow-x:auto;
+  margin-bottom:2rem;
+}
+.data-table {
+  width:100%;
+  border-collapse:collapse;
+}
+.data-table thead tr {
+  background:var(--brown);
+}
+.data-table thead th {
+  padding:0.75rem 1rem;
+  text-align:left;
+  font-size:0.55rem;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+  font-weight:400;
+  white-space:nowrap;
+}
+.data-table tbody tr {
+  border-bottom:1px solid var(--gold-pale);
+  transition:background 0.15s;
+}
+.data-table tbody tr:last-child { border-bottom:none; }
+.data-table tbody tr:hover { background:var(--cream); }
+.data-table td {
+  padding:0.9rem 1rem;
+  vertical-align:middle;
+  font-size:0.75rem;
+  color:var(--text);
+}
+
+.product-cell { display:flex; align-items:center; gap:0.8rem; }
+.product-thumb {
+  width:42px; height:42px;
+  background:var(--cream);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.4rem;
+  color:var(--gold-pale);
+  font-style:italic;
+  flex-shrink:0;
+  overflow:hidden;
+}
+.product-thumb img { width:100%; height:100%; object-fit:cover; }
+.product-cell-name { font-weight:400; color:var(--brown); margin-bottom:0.15rem; font-size:0.78rem; }
+.product-cell-cat { font-size:0.62rem; color:var(--text-s); letter-spacing:0.05em; }
+
+.price-cell { font-family:'Cormorant Garamond',serif; font-size:0.95rem; color:var(--gold); }
+
+.status-pill {
+  display:inline-flex; align-items:center; gap:0.3rem;
+  padding:0.2rem 0.7rem;
+  font-size:0.58rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  font-weight:500;
+  border-radius:2px;
+}
+.status-active { background:var(--green-l); color:var(--green); }
+.status-inactive { background:var(--red-l); color:var(--red); }
+.status-draft { background:var(--cream-d); color:var(--text-s); }
+
+.payment-badge { display:inline-block; margin-top:0.3rem; padding:0.15rem 0.5rem; border-radius:20px; font-size:0.6rem; letter-spacing:0.03em; white-space:nowrap; }
+.payment-badge--ok { background:var(--green-l); color:var(--green); }
+.payment-badge--pending { background:#FFF8E7; color:#8a6820; }
+.payment-badge--warn { background:var(--red-l); color:var(--red); font-weight:500; }
+.btn-mark-paid { display:block; margin-top:0.35rem; font-size:0.58rem; letter-spacing:0.05em; text-transform:uppercase; padding:0.2rem 0.5rem; border:1px solid var(--green); background:none; color:var(--green); border-radius:4px; cursor:pointer; white-space:nowrap; }
+.btn-mark-paid:hover { background:var(--green-l); }
+
+.action-btns { display:flex; gap:0.4rem; }
+.action-btn {
+  padding:0.3rem 0.7rem;
+  font-size:0.58rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  font-family:'Jost',sans-serif;
+  cursor:pointer;
+  border:1px solid var(--gold-pale);
+  background:var(--white);
+  color:var(--text-m);
+  transition:all 0.2s;
+  text-decoration:none;
+  display:inline-block;
+}
+.action-btn:hover { background:var(--gold); color:var(--white); border-color:var(--gold); }
+.action-btn.danger:hover { background:var(--red); border-color:var(--red); }
+
+/* SEARCH */
+.campaigns-card {
+  background:var(--white);
+  border:1px solid var(--gold-pale);
+  border-radius:8px;
+  padding:1.2rem 1.4rem;
+  margin-bottom:1.4rem;
+}
+.campaigns-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.5rem; }
+.campaigns-card-title { font-family:'Cormorant Garamond',serif; font-size:1.05rem; color:var(--brown); margin-bottom:0.3rem; }
+.campaigns-card-sub { font-size:0.72rem; color:var(--text-s); margin-bottom:0; }
+.btn-campaign-new {
+  padding:0.45rem 1rem; background:none; color:var(--gold); border:1px solid var(--gold-pale);
+  font-family:'Jost',sans-serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer; transition:all 0.2s; white-space:nowrap; flex-shrink:0; text-decoration:none;
+}
+.btn-campaign-new:hover { background:var(--cream); border-color:var(--gold); }
+.campaign-row {
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:0.7rem 0; border-top:1px solid var(--gold-pale);
+}
+.campaign-row:first-child { border-top:none; padding-top:0; }
+.campaign-info { display:flex; flex-direction:column; gap:0.15rem; }
+.campaign-nome { font-size:0.8rem; font-weight:500; color:var(--text); }
+.campaign-assunto { font-size:0.68rem; color:var(--text-s); }
+.btn-campaign-send {
+  padding:0.4rem 1rem; background:var(--gold); color:var(--white); border:none;
+  font-family:'Jost',sans-serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase;
+  cursor:pointer; transition:background 0.2s; white-space:nowrap; flex-shrink:0;
+}
+.btn-campaign-send:hover { background:var(--brown-m); }
+.btn-campaign-send:disabled { background:var(--text-s); cursor:not-allowed; }
+.campaigns-empty { font-size:0.75rem; color:var(--text-s); }
+
+.search-input {
+  width:100%; max-width:320px;
+  padding:0.55rem 0.9rem;
+  border:1px solid var(--gold-pale);
+  font-family:'Jost',sans-serif;
+  font-size:0.78rem;
+  color:var(--text);
+  background:var(--white);
+  outline:none;
+  margin-bottom:1.2rem;
+}
+.search-input:focus { border-color:var(--gold); }
+
+/* WEEKDAY CHART */
+.weekday-chart-card {
+  background:var(--white);
+  border:1px solid var(--gold-pale);
+  padding:1.5rem;
+  margin-bottom:1.5rem;
+}
+.weekday-chart-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.05rem;
+  color:var(--brown);
+  margin-bottom:1rem;
+}
+.weekday-chart {
+  display:flex;
+  align-items:flex-end;
+  gap:0.8rem;
+  height:120px;
+}
+.weekday-bar-col {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  height:100%;
+  gap:0.4rem;
+}
+.weekday-bar-count { font-size:0.65rem; color:var(--text-s); }
+.weekday-bar {
+  width:100%;
+  max-width:32px;
+  background:var(--gold-pale);
+  border-radius:3px 3px 0 0;
+  transition:background 0.2s;
+  min-height:3px;
+}
+.weekday-bar-col.peak .weekday-bar { background:var(--gold); }
+.weekday-bar-label { font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-s); }
+
+/* EMPTY TABLE */
+.table-empty {
+  text-align:center;
+  padding:3rem 2rem;
+  color:var(--text-s);
+}
+.table-empty .e-icon {
+  font-family:'Cormorant Garamond',serif;
+  font-size:3rem;
+  color:var(--gold-pale);
+  font-style:italic;
+  margin-bottom:0.8rem;
+}
+.table-empty p { font-size:0.78rem; margin-bottom:1rem; }
+
+/* LOADING */
+.loading {
+  display:flex; align-items:center; justify-content:center;
+  padding:3rem; gap:0.8rem; color:var(--text-s); font-size:0.75rem;
+}
+.spinner {
+  width:20px; height:20px;
+  border:2px solid var(--gold-pale);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:2rem; right:2rem;
+  background:var(--brown); color:var(--cream);
+  padding:0.9rem 1.4rem;
+  font-size:0.75rem; letter-spacing:0.05em;
+  z-index:500; display:flex; align-items:center; gap:0.7rem;
+  transform:translateY(calc(100% + 2rem)); opacity:0;
+  transition:all 0.3s ease; max-width:320px;
+}
+.toast.show { transform:translateY(0); opacity:1; }
+.toast-dot { width:7px; height:7px; border-radius:50%; background:var(--gold-light); flex-shrink:0; }
+
+/* CONFIRM MODAL */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(42,31,20,0.5);
+  z-index:200; display:none;
+  align-items:center; justify-content:center; padding:2rem;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:var(--white);
+  max-width:380px; width:100%;
+  padding:2rem;
+}
+.modal-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.3rem; font-weight:300;
+  color:var(--brown); margin-bottom:0.8rem;
+}
+.modal-text { font-size:0.78rem; color:var(--text-m); line-height:1.7; margin-bottom:1.5rem; }
+.modal-btns { display:flex; gap:0.8rem; justify-content:flex-end; }
+.modal-desc { font-size:0.78rem; color:var(--text-m); line-height:1.7; margin-bottom:1.2rem; }
+
+/* STATUS SELECT */
+.status-select {
+  padding:0.4rem 0.6rem;
+  font-size:0.68rem;
+  font-family:'Jost',sans-serif;
+  border:1px solid var(--gold-pale);
+  background:var(--white);
+  color:var(--text-m);
+  cursor:pointer;
+  outline:none;
+}
+.status-select:focus { border-color:var(--gold); }
+.tracking-note { font-size:0.6rem; color:var(--text-s); margin-top:0.2rem; }
+.copy-btn-sm { border:none; background:none; cursor:pointer; color:var(--gold); font-size:0.85rem; margin-left:0.35rem; padding:0.1rem 0.2rem; vertical-align:middle; transition:color 0.2s; }
+.copy-btn-sm:hover { color:var(--text); }
+
+/* SIDEBAR TOGGLE — sempre visível, funciona em qualquer largura */
+.sidebar-toggle-btn {
+  display:flex;
+  width:34px; height:34px;
+  border:none; background:none;
+  color:var(--brown);
+  font-size:1.2rem;
+  cursor:pointer;
+  align-items:center; justify-content:center;
+}
+.sidebar-collapse-btn {
+  display:flex;
+  width:28px; height:28px;
+  border:none;
+  background:rgba(255,255,255,0.1);
+  color:var(--gold-light);
+  border-radius:50%;
+  align-items:center; justify-content:center;
+  cursor:pointer;
+  font-size:0.85rem;
+  margin-left:auto;
+}
+.sidebar-logo { display:flex; align-items:center; justify-content:space-between; }
+.sidebar-overlay {
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(42,31,20,0.45);
+  z-index:99;
+}
+
+/* RESPONSIVE (mobile/tablet — vira menu-gaveta) */
+@media(max-width:1024px) {
+  .sidebar { transform:translateX(-100%); }
+  body.sidebar-mobile-open .sidebar { transform:translateX(0); }
+  .main { margin-left:0; }
+  body.sidebar-mobile-open .sidebar-overlay { display:block; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:600px) {
+  .stats-grid { grid-template-columns:1fr; }
+  .content { padding:1rem; }
+  .topbar { padding:0 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div>
+      <span class="brand">Jeh Corrêa</span>
+      <span class="tag">Painel Admin</span>
+    </div>
+    <button type="button" class="sidebar-collapse-btn" onclick="closeSidebar()" aria-label="Recolher menu" title="Recolher menu">‹</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">Principal</div>
+    <a class="nav-item active" href="/admin/dashboard">
+      <span class="icon">📊</span> Dashboard
+    </a>
+    <a class="nav-item" href="/admin/produto">
+      <span class="icon">✦</span> Novo Produto
+    </a>
+
+    <div class="nav-section-title" style="margin-top:0.5rem;">Gestão</div>
+    <a class="nav-item" id="nav-produtos" href="dashboard.html#produtos" onclick="showSection('produtos');return false;">
+      <span class="icon">💍</span> Produtos
+    </a>
+    <a class="nav-item" id="nav-pedidos" href="dashboard.html#pedidos" onclick="showSection('pedidos');return false;">
+      <span class="icon">📦</span> Pedidos
+      <span class="nav-badge" id="badge-pedidos">0</span>
+    </a>
+    <a class="nav-item" id="nav-clientes" href="dashboard.html#clientes" onclick="showSection('clientes');return false;">
+      <span class="icon">👤</span> Clientes
+    </a>
+
+    <div class="nav-section-title" style="margin-top:0.5rem;">Configurações</div>
+    <a class="nav-item" href="/admin/cupons">
+      <span class="icon">🏷️</span> Cupons
+    </a>
+    <a class="nav-item" href="/admin/blog">
+      <span class="icon">📝</span> Blog
+    </a>
+    <a class="nav-item" href="../index.html" target="_blank">
+      <span class="icon">🌐</span> Ver loja
+    </a>
+    <a class="nav-item" href="/admin/configuracoes">
+      <span class="icon">⚙</span> Configurações
+    </a>
+    <a class="nav-item" href="#" onclick="AdminTour.open();return false;">
+      <span class="icon">🧭</span> Ajuda
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">E</div>
+      <div>
+        <div class="user-name">Jeh Corrêa</div>
+        <div class="user-email" id="user-email-display">—</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sair</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button type="button" class="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Abrir menu" title="Abrir menu">☰</button>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener" class="btn-stats">📊 Ver estatísticas</a>
+      <a href="/admin/produto" class="btn-new-product">+ Novo Produto</a>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total de produtos</div>
+        <div class="stat-value" id="stat-produtos">—</div>
+        <div class="stat-change">Cadastrados na loja</div>
+        <div class="stat-icon">💍</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Produtos ativos</div>
+        <div class="stat-value" id="stat-ativos">—</div>
+        <div class="stat-change up" id="stat-ativos-pct">Visíveis na loja</div>
+        <div class="stat-icon">✅</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pedidos recebidos</div>
+        <div class="stat-value" id="stat-pedidos">—</div>
+        <div class="stat-change">Total na plataforma</div>
+        <div class="stat-icon">📦</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Faturamento total</div>
+        <div class="stat-value" id="stat-faturamento">—</div>
+        <div class="stat-change up">Valor dos pedidos</div>
+        <div class="stat-icon">💰</div>
+      </div>
+    </div>
+
+    <!-- BUSCA NO GOOGLE -->
+    <div class="stats-grid" id="gsc-grid" style="display:none;margin-top:1rem;">
+      <div class="stat-card">
+        <div class="stat-label">Cliques no Google</div>
+        <div class="stat-value" id="gsc-clicks">—</div>
+        <div class="stat-change" id="gsc-periodo">Últimos 28 dias</div>
+        <div class="stat-icon">🔍</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Impressões</div>
+        <div class="stat-value" id="gsc-impressions">—</div>
+        <div class="stat-change">Vezes que apareceu na busca</div>
+        <div class="stat-icon">👁️</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Taxa de cliques</div>
+        <div class="stat-value" id="gsc-ctr">—</div>
+        <div class="stat-change">CTR médio</div>
+        <div class="stat-icon">📈</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Posição média</div>
+        <div class="stat-value" id="gsc-position">—</div>
+        <div class="stat-change">No Google</div>
+        <div class="stat-icon">🏆</div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div id="section-produtos">
+      <div class="section-header">
+        <h2 class="section-title">Produtos Cadastrados</h2>
+        <a href="/admin/produto" class="btn-sm">+ Novo produto</a>
+      </div>
+      <div class="table-wrap">
+        <div class="loading" id="loading-produtos">
+          <div class="spinner"></div> Carregando produtos...
+        </div>
+        <table class="data-table" id="table-produtos" style="display:none;">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Categoria</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-produtos"></tbody>
+        </table>
+        <div class="table-empty" id="empty-produtos" style="display:none;">
+          <div class="e-icon">◈</div>
+          <p>Nenhum produto cadastrado ainda.</p>
+          <a href="/admin/produto" class="btn-sm">Cadastrar primeiro produto</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PEDIDOS -->
+    <div id="section-pedidos">
+      <div class="section-header">
+        <h2 class="section-title">Pedidos Recentes</h2>
+      </div>
+      <div class="weekday-chart-card">
+        <div class="weekday-chart-title">Pedidos por dia da semana</div>
+        <div class="weekday-chart" id="weekday-chart"></div>
+      </div>
+      <div class="table-wrap">
+        <div class="loading" id="loading-pedidos">
+          <div class="spinner"></div> Carregando pedidos...
+        </div>
+        <table class="data-table" id="table-pedidos" style="display:none;">
+          <thead>
+            <tr>
+              <th>Pedido</th>
+              <th>Cliente</th>
+              <th>Produto(s)</th>
+              <th>Total</th>
+              <th>Pagamento</th>
+              <th>Status</th>
+              <th>Atualizar status</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-pedidos"></tbody>
+        </table>
+        <div class="table-empty" id="empty-pedidos" style="display:none;">
+          <div class="e-icon">📦</div>
+          <p>Nenhum pedido recebido ainda.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div id="section-clientes" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">Clientes</h2>
+      </div>
+
+      <div class="campaigns-card" id="campaigns-card">
+        <div class="campaigns-card-head">
+          <div>
+            <div class="campaigns-card-title">✉️ Campanhas prontas no Brevo</div>
+            <p class="campaigns-card-sub">Campanhas que você já preparou no Brevo, prontas pra disparar sem precisar abrir o painel de lá.</p>
+          </div>
+          <a href="https://app.brevo.com/camp/list/campaigns" target="_blank" rel="noopener" class="btn-campaign-new">+ Criar campanha</a>
+        </div>
+        <div id="campaigns-list"></div>
+      </div>
+
+      <input type="text" class="search-input" id="clientes-busca" placeholder="Buscar por nome ou e-mail..." oninput="renderClientesTable()">
+      <div class="table-wrap">
+        <div class="loading" id="loading-clientes">
+          <div class="spinner"></div> Carregando clientes...
+        </div>
+        <table class="data-table" id="table-clientes" style="display:none;">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Contato</th>
+              <th>Cidade/UF</th>
+              <th>Pedidos</th>
+              <th>Total gasto</th>
+              <th>Último pedido</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-clientes"></tbody>
+        </table>
+        <div class="table-empty" id="empty-clientes" style="display:none;">
+          <div class="e-icon">👤</div>
+          <p>Nenhum cliente ainda — clientes aparecem aqui após o primeiro pedido.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-title">Confirmar exclusão</div>
+    <p class="modal-text">Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.</p>
+    <div class="modal-btns">
+      <button class="btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn-sm danger" id="confirm-delete-btn" style="background:var(--red);color:white;border-color:var(--red);">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKING MODAL -->
+<div class="modal-overlay" id="tracking-modal">
+  <div class="modal-box">
+    <div class="modal-title">Código de rastreio</div>
+    <p class="modal-desc">Informe o código de rastreio para avisar a cliente por e-mail que o pedido foi enviado.</p>
+    <div class="form-group" style="margin-bottom:0.9rem;">
+      <label class="form-label" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-s);margin-bottom:0.4rem;">Transportadora</label>
+      <select id="tracking-transportadora" class="search-input" style="margin:0;max-width:none;">
+        <option value="Correios">Correios</option>
+        <option value="Outra">Outra transportadora</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:0.4rem;">
+      <label class="form-label" style="display:block;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-s);margin-bottom:0.4rem;">Código de rastreio</label>
+      <input type="text" id="tracking-codigo" class="search-input" style="margin:0;max-width:none;" placeholder="BR123456789BR">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-sm" onclick="cancelarTrackingModal()">Cancelar</button>
+      <button class="btn-sm" id="confirm-tracking-btn" style="background:var(--gold);color:white;border-color:var(--gold);" onclick="confirmarTrackingModal()">Confirmar envio</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-dot"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, query, orderBy, getDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "COLE_AQUI_SUA_API_KEY_DO_FIREBASE",
+  authDomain: "jeh-correa-moda.firebaseapp.com",
+  projectId: "jeh-correa-moda",
+  storageBucket: "jeh-correa-moda.firebasestorage.app",
+  messagingSenderId: "COLE_AQUI_SEU_MESSAGING_SENDER_ID",
+  appId: "COLE_AQUI_SEU_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── AUTH GUARD ──
+onAuthStateChanged(auth, user => {
+  if (!user) { window.location.href = '/admin'; return; }
+  document.getElementById('user-email-display').textContent = user.email;
+  loadDashboard();
+});
+
+// ── SECTIONS ──
+const SECTIONS = ['produtos', 'pedidos', 'clientes'];
+const SECTION_TITLES = { produtos: 'Produtos', pedidos: 'Pedidos', clientes: 'Clientes' };
+window.showSection = function(nome) {
+  if (!SECTIONS.includes(nome)) nome = 'produtos';
+  SECTIONS.forEach(s => {
+    const el = document.getElementById('section-' + s);
+    if (el) el.style.display = s === nome ? '' : 'none';
+    document.getElementById('nav-' + s)?.classList.toggle('active', s === nome);
+  });
+  document.getElementById('page-title').textContent = SECTION_TITLES[nome];
+  history.replaceState(null, '', '#' + nome);
+};
+showSection(location.hash.replace('#', '') || 'produtos');
+
+// Lê a data do pedido tanto se vier como Firestore Timestamp quanto como
+// string ISO (checkout.html grava como string, não como Timestamp).
+function pedidoData(p) {
+  if (!p.criadoEm) return null;
+  if (typeof p.criadoEm.toDate === 'function') return p.criadoEm.toDate();
+  const d = new Date(p.criadoEm);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// ── STATUS DO PEDIDO ──
+const STATUS_LABELS = {
+  novo: 'Novo', processando: 'Processando', enviado: 'Enviado',
+  entregue: 'Entregue', cancelado: 'Cancelado',
+};
+const STATUS_PILL_CLASS = {
+  novo: 'status-active', processando: 'status-draft',
+  enviado: 'status-active', entregue: 'status-active', cancelado: 'status-inactive',
+};
+let pedidosCache = [];
+let pendingTrackingPedido = null;
+let pendingTrackingSelect = null;
+
+// ── PAGAMENTO (boleto/pix aguardando confirmação do Mercado Pago) ──
+function renderPagamentoBadge(p) {
+  if (p.pagamentoConfirmado) return `<div class="payment-badge payment-badge--ok">✓ Pago</div>`;
+  if (p.pagamento === 'boleto') {
+    const venc = p.vencimento ? new Date(p.vencimento) : null;
+    const vencido = venc && !isNaN(venc.getTime()) && venc.getTime() < Date.now();
+    if (vencido) {
+      return `<div class="payment-badge payment-badge--warn">⚠ Vencido${p.avisoVencimentoEnviado ? ' · cliente avisada' : ''}</div>
+              <button type="button" class="btn-mark-paid" onclick="marcarPagamentoConfirmado('${p.id}')">Marcar como pago</button>`;
+    }
+    return `<div class="payment-badge payment-badge--pending">Aguardando${venc && !isNaN(venc.getTime()) ? ' até ' + venc.toLocaleDateString('pt-BR') : ''}</div>
+            <button type="button" class="btn-mark-paid" onclick="marcarPagamentoConfirmado('${p.id}')">Marcar como pago</button>`;
+  }
+  if (p.pagamento === 'pix' && p.mercadoPago?.status && p.mercadoPago.status !== 'approved') {
+    return `<div class="payment-badge payment-badge--pending">Aguardando</div>
+            <button type="button" class="btn-mark-paid" onclick="marcarPagamentoConfirmado('${p.id}')">Marcar como pago</button>`;
+  }
+  return '';
+}
+
+// Fallback manual — usado quando o webhook do Mercado Pago ainda não está
+// configurado ou não disparou (ex: pagamento combinado fora do sistema).
+window.marcarPagamentoConfirmado = async function(id) {
+  const pedido = pedidosCache.find(p => p.id === id);
+  if (!pedido) return;
+  try {
+    const updates = { pagamentoConfirmado: true, pagamentoConfirmadoEm: new Date().toISOString() };
+    if ((pedido.status || 'novo') === 'novo') updates.status = 'processando';
+    await updateDoc(doc(db, 'pedidos', id), updates);
+    Object.assign(pedido, updates);
+    showToast('Pagamento marcado como confirmado');
+    loadPedidos();
+  } catch (e) {
+    console.error(e);
+    showToast('Erro ao marcar pagamento como confirmado');
+  }
+};
+
+window.onStatusSelectChange = function(selectEl) {
+  const id = selectEl.dataset.id;
+  const novoStatus = selectEl.value;
+  const pedido = pedidosCache.find(p => p.id === id);
+  if (!pedido) return;
+  const statusAnterior = pedido.status || 'novo';
+  if (novoStatus === statusAnterior) return;
+
+  if (novoStatus === 'enviado') {
+    pendingTrackingPedido = pedido;
+    pendingTrackingSelect = selectEl;
+    document.getElementById('tracking-codigo').value = pedido.codigoRastreio || '';
+    document.getElementById('tracking-transportadora').value = pedido.transportadora || 'Correios';
+    document.getElementById('tracking-modal').classList.add('open');
+    return;
+  }
+
+  aplicarMudancaStatus(pedido, novoStatus, selectEl);
+};
+
+window.cancelarTrackingModal = function() {
+  document.getElementById('tracking-modal').classList.remove('open');
+  if (pendingTrackingSelect && pendingTrackingPedido) {
+    pendingTrackingSelect.value = pendingTrackingPedido.status || 'novo';
+  }
+  pendingTrackingPedido = null;
+  pendingTrackingSelect = null;
+};
+
+window.confirmarTrackingModal = async function() {
+  const codigo = document.getElementById('tracking-codigo').value.trim();
+  const transportadora = document.getElementById('tracking-transportadora').value;
+  if (!codigo) { showToast('Informe o código de rastreio'); return; }
+  document.getElementById('tracking-modal').classList.remove('open');
+  await aplicarMudancaStatus(pendingTrackingPedido, 'enviado', pendingTrackingSelect, { codigoRastreio: codigo, transportadora });
+  pendingTrackingPedido = null;
+  pendingTrackingSelect = null;
+};
+
+async function aplicarMudancaStatus(pedido, novoStatus, selectEl, extra) {
+  try {
+    const updates = { status: novoStatus, ...(extra || {}) };
+    await updateDoc(doc(db, 'pedidos', pedido.id), updates);
+    Object.assign(pedido, updates);
+    showToast('Status atualizado — e-mail enviado à cliente');
+    enviarEmailStatusPedido(pedido, novoStatus, extra);
+    loadPedidos();
+  } catch (e) {
+    console.error(e);
+    showToast('Erro ao atualizar status');
+    if (selectEl) selectEl.value = pedido.status || 'novo';
+  }
+}
+
+// ── E-MAILS DE STATUS ──
+let _instagramUrl = null;
+let _instagramUrlLoaded = false;
+async function getInstagramUrl() {
+  if (_instagramUrlLoaded) return _instagramUrl;
+  try {
+    const snap = await getDoc(doc(db, 'configuracoes', 'loja'));
+    _instagramUrl = snap.exists() ? (snap.data().geral?.instagramUrl || null) : null;
+  } catch (e) {
+    _instagramUrl = null;
+  }
+  _instagramUrlLoaded = true;
+  return _instagramUrl;
+}
+
+function instagramCTA(instagramUrl) {
+  if (!instagramUrl) return '';
+  return `
+    <div style="text-align:center;margin-top:8px;padding-top:20px;border-top:1px solid #E0CEBB;">
+      <p style="margin:0 0 10px;font-size:13px;color:#5A4030;">Ama roupas? Siga a gente e acompanhe os lançamentos ✦</p>
+      <a href="${instagramUrl}" target="_blank" style="display:inline-block;background:#3D2B1A;color:#C4A47A;font-family:Georgia,serif;font-size:12px;letter-spacing:2px;padding:10px 24px;text-decoration:none;">SEGUIR NO INSTAGRAM</a>
+    </div>`;
+}
+
+function emailWrapper(titulo, corpoHtml, instagramUrl) {
+  return `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#F5F0EA;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0EA;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#FEFCF9;border:1px solid #E0CEBB;max-width:560px;width:100%;">
+        <tr>
+          <td style="background:#3D2B1A;padding:32px 40px;text-align:center;">
+            <p style="margin:0;font-family:Georgia,serif;font-size:22px;font-weight:300;letter-spacing:8px;color:#C4A47A;text-transform:uppercase;">Jeh Corrêa</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px 40px 32px;">
+            <h1 style="font-family:Georgia,serif;font-size:24px;font-weight:300;color:#3D2B1A;margin:0 0 16px;">${titulo}</h1>
+            ${corpoHtml}
+            ${instagramCTA(instagramUrl)}
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#F5F0EA;padding:24px 40px;text-align:center;border-top:1px solid #E0CEBB;">
+            <p style="margin:0;font-size:11px;color:#9C8070;letter-spacing:1px;">Com carinho, equipe Jeh Corrêa ✦</p>
+            <p style="margin:4px 0 0;font-size:11px;color:#C4A47A;letter-spacing:1px;">SEU-DOMINIO-AQUI.com.br</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>`;
+}
+
+function montarEmailStatus(status, ctx) {
+  const primeiroNome = (ctx.nome || 'Cliente').split(' ')[0];
+  const numero = ctx.numero;
+  const instagramUrl = ctx.instagramUrl;
+
+  if (status === 'processando') {
+    return {
+      subject: `✨ Seu pedido ${numero} está sendo preparado com carinho`,
+      html: emailWrapper('Seu pedido está sendo preparado ✨', `
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Olá, <strong>${primeiroNome}</strong>!</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Queremos que você saiba: seu pedido <strong>${numero}</strong> já está em nossas mãos e está sendo preparado com todo o cuidado que uma peça Jeh Corrêa merece.</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Assim que ele for despachado, você receberá um novo e-mail com o código de rastreio.</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0;">Obrigada pela confiança — é uma alegria preparar essa peça para você.</p>
+      `, instagramUrl),
+    };
+  }
+
+  if (status === 'enviado') {
+    const codigo = ctx.codigoRastreio || '';
+    const transportadora = ctx.transportadora || 'Correios';
+    const linkCorreios = transportadora === 'Correios' && codigo
+      ? `<div style="text-align:center;margin-bottom:8px;">
+          <a href="https://rastreamento.correios.com.br/app/index.php?objetos=${encodeURIComponent(codigo)}" target="_blank"
+            style="display:inline-block;background:#3D2B1A;color:#C4A47A;font-family:Georgia,serif;font-size:14px;letter-spacing:2px;padding:14px 32px;text-decoration:none;font-weight:300;">
+            RASTREAR NOS CORREIOS
+          </a>
+        </div>`
+      : '';
+    return {
+      subject: `📦 Seu pedido ${numero} foi enviado!`,
+      html: emailWrapper('Seu pedido foi enviado! 📦', `
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Olá, <strong>${primeiroNome}</strong>!</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Sua peça já está a caminho! Preparamos tudo com muito cuidado e o pedido <strong>${numero}</strong> foi despachado hoje.</p>
+        <div style="background:#FFF8E7;border:2px solid #C4A47A;padding:20px 24px;margin:8px 0 20px;text-align:center;border-radius:4px;">
+          <p style="margin:0 0 4px;font-size:11px;color:#7A5500;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Código de rastreio</p>
+          <p style="margin:0;font-family:Georgia,serif;font-size:22px;color:#3D2B1A;letter-spacing:1px;">${codigo}</p>
+          <p style="margin:6px 0 0;font-size:12px;color:#9A7000;">${transportadora}</p>
+        </div>
+        ${linkCorreios}
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0;">Assim que chegar, esperamos que você se encante com cada detalhe. Qualquer dúvida, estamos por aqui.</p>
+      `, instagramUrl),
+    };
+  }
+
+  if (status === 'entregue') {
+    return {
+      subject: `✦ Seu pedido ${numero} chegou!`,
+      html: emailWrapper('Esperamos que você ame sua nova peça ✦', `
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Olá, <strong>${primeiroNome}</strong>!</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Nosso sistema indica que seu pedido <strong>${numero}</strong> foi entregue — que alegria! Esperamos que cada detalhe da sua nova peça tenha encantado você.</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0;">Se puder, adoraríamos saber o que achou. Sua opinião significa muito para nós — e para as próximas clientes que ainda vão conhecer a Jeh Corrêa.</p>
+      `, instagramUrl),
+    };
+  }
+
+  if (status === 'cancelado') {
+    return {
+      subject: `Seu pedido ${numero} foi cancelado`,
+      html: emailWrapper('Seu pedido foi cancelado', `
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Olá, <strong>${primeiroNome}</strong>,</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Confirmamos que o pedido <strong>${numero}</strong> foi cancelado.</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0 0 16px;">Se isso foi um engano, ou se você tiver qualquer dúvida sobre reembolso, é só responder este e-mail ou falar com a gente pelo WhatsApp — estamos prontos para ajudar.</p>
+        <p style="font-size:14px;color:#5A4030;line-height:1.8;margin:0;">Esperamos ter a oportunidade de te atender em breve.</p>
+      `, instagramUrl),
+    };
+  }
+
+  return null;
+}
+
+async function enviarEmailStatusPedido(pedido, status, extra) {
+  const email = pedido.cliente?.email;
+  if (!email) return;
+  const instagramUrl = await getInstagramUrl();
+  const template = montarEmailStatus(status, {
+    nome: pedido.cliente?.nome,
+    numero: pedido.numeroPedido || pedido.id,
+    instagramUrl,
+    ...(extra || {}),
+  });
+  if (!template) return;
+  try {
+    await fetch('/api/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: email,
+        toName: pedido.cliente?.nome,
+        subject: template.subject,
+        htmlContent: template.html,
+      }),
+    });
+  } catch (e) {
+    console.warn('Erro ao enviar e-mail de status:', e);
+  }
+}
+
+// ── TESTE MANUAL (rodar no console do DevTools, F12) ──
+// testarEmailStatus('enviado', 'contato@jehcorrea.com.br')
+// ['processando','enviado','entregue','cancelado'].forEach(s => testarEmailStatus(s, 'contato@jehcorrea.com.br'))
+window.testarEmailStatus = async function(status, emailDestino, opts) {
+  opts = opts || {};
+  const ctx = {
+    nome: opts.nome || 'Cliente Teste',
+    numero: opts.numero || '#JC-00000',
+    codigoRastreio: opts.codigoRastreio || 'BR123456789BR',
+    transportadora: opts.transportadora || 'Correios',
+    instagramUrl: await getInstagramUrl(),
+  };
+  const template = montarEmailStatus(status, ctx);
+  if (!template) { console.warn('Status sem e-mail definido:', status); return; }
+  const res = await fetch('/api/email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ to: emailDestino, toName: ctx.nome, subject: template.subject, htmlContent: template.html }),
+  });
+  const data = await res.json();
+  console.log(`[${status}] enviado para ${emailDestino}:`, data);
+  return data;
+};
+
+// ── LOAD ──
+async function loadDashboard() {
+  await Promise.all([loadProdutos(), loadPedidos()]);
+  loadSearchConsoleStats();
+  loadCampaigns();
+}
+
+async function loadCampaigns() {
+  try {
+    const res = await fetch('/api/brevo-campaigns');
+    const data = await res.json();
+    const campanhas = data.campanhas || [];
+    const list = document.getElementById('campaigns-list');
+    if (!campanhas.length) {
+      list.innerHTML = `<p class="campaigns-empty">Nenhuma campanha em rascunho no Brevo agora. Clique em "Criar campanha" para preparar uma nova.</p>`;
+      return;
+    }
+    list.innerHTML = campanhas.map(c => `
+      <div class="campaign-row">
+        <div class="campaign-info">
+          <div class="campaign-nome">${c.nome}</div>
+          <div class="campaign-assunto">${c.assunto || ''}</div>
+        </div>
+        <button class="btn-campaign-send" onclick="dispararCampanha(${c.id}, this, '${c.nome.replace(/'/g, "\\'")}')">Disparar</button>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.warn('Campanhas do Brevo indisponíveis:', e);
+  }
+}
+
+window.dispararCampanha = async function(id, btn, nome) {
+  if (!confirm(`Disparar a campanha "${nome}" agora? Ela será enviada pra lista configurada no Brevo — essa ação não pode ser desfeita.`)) return;
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  try {
+    const res = await fetch('/api/brevo-campaigns', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Falha ao disparar');
+    showToast(`Campanha "${nome}" disparada!`);
+    loadCampaigns();
+  } catch (e) {
+    console.error(e);
+    showToast('Erro ao disparar campanha');
+    btn.disabled = false;
+    btn.textContent = 'Disparar';
+  }
+};
+
+async function loadSearchConsoleStats() {
+  try {
+    const res = await fetch('/api/search-console-stats');
+    const data = await res.json();
+    if (!data.configured || data.error) return;
+    document.getElementById('gsc-clicks').textContent = data.clicks.toLocaleString('pt-BR');
+    document.getElementById('gsc-impressions').textContent = data.impressions.toLocaleString('pt-BR');
+    document.getElementById('gsc-ctr').textContent = (data.ctr * 100).toFixed(1).replace('.', ',') + '%';
+    document.getElementById('gsc-position').textContent = data.position.toFixed(1).replace('.', ',');
+    if (data.periodo) document.getElementById('gsc-periodo').textContent = data.periodo;
+    document.getElementById('gsc-grid').style.display = 'grid';
+  } catch (e) {
+    console.warn('Estatísticas de busca do Google indisponíveis:', e);
+  }
+}
+
+// ── PRODUTOS ──
+async function loadProdutos() {
+  try {
+    const snap = await getDocs(query(collection(db,'produtos'), orderBy('criadoEm','desc')));
+    const produtos = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+
+    // Stats
+    document.getElementById('stat-produtos').textContent = produtos.length;
+    const ativos = produtos.filter(p => p.status === 'ativo').length;
+    document.getElementById('stat-ativos').textContent = ativos;
+
+    document.getElementById('loading-produtos').style.display = 'none';
+
+    if (produtos.length === 0) {
+      document.getElementById('empty-produtos').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('table-produtos').style.display = 'table';
+    const tbody = document.getElementById('tbody-produtos');
+    tbody.innerHTML = produtos.map(p => `
+      <tr>
+        <td>
+          <div class="product-cell">
+            <div class="product-thumb">
+              ${p.fotos?.[0] ? `<img src="${p.fotos[0]}" alt="${p.nome}">` : (p.simbolo||'◈')}
+            </div>
+            <div>
+              <div class="product-cell-name">${p.nome}</div>
+              <div class="product-cell-cat">${p.categoria||'—'}</div>
+            </div>
+          </div>
+        </td>
+        <td>${p.categoria||'—'}</td>
+        <td><span class="price-cell">R$ ${Number(p.preco).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></td>
+        <td>${p.estoque ?? '—'}</td>
+        <td>
+          <span class="status-pill ${p.status==='ativo'?'status-active':p.status==='rascunho'?'status-draft':'status-inactive'}">
+            ${p.status==='ativo'?'● Ativo':p.status==='rascunho'?'◌ Rascunho':'○ Inativo'}
+          </span>
+        </td>
+        <td>
+          <div class="action-btns">
+            <a href="/admin/produto?id=${p.id}" class="action-btn">Editar</a>
+            <button class="action-btn" onclick="toggleStatus('${p.id}','${p.status}')">
+              ${p.status==='ativo'?'Pausar':'Ativar'}
+            </button>
+            <button class="action-btn danger" onclick="confirmDelete('${p.id}','${p.nome}')">Excluir</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) {
+    document.getElementById('loading-produtos').innerHTML = '<p style="color:#E53E3E;font-size:0.75rem;">Erro ao carregar produtos.</p>';
+    console.error(e);
+  }
+}
+
+// ── PEDIDOS ──
+async function loadPedidos() {
+  try {
+    const snap = await getDocs(query(collection(db,'pedidos'), orderBy('criadoEm','desc')));
+    const pedidos = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    pedidosCache = pedidos;
+
+    document.getElementById('stat-pedidos').textContent = pedidos.length;
+    const fat = pedidos.reduce((s,p) => s + (p.total||0), 0);
+    document.getElementById('stat-faturamento').textContent =
+      pedidos.length > 0 ? `R$${fat.toLocaleString('pt-BR',{minimumFractionDigits:0})}` : 'R$ 0';
+
+    const novos = pedidos.filter(p => p.status === 'novo').length;
+    document.getElementById('badge-pedidos').textContent = novos || '';
+
+    document.getElementById('loading-pedidos').style.display = 'none';
+
+    renderWeekdayChart(pedidos);
+    clientesAgregados = agregarClientes(pedidos);
+    renderClientesTable();
+
+    if (pedidos.length === 0) {
+      document.getElementById('empty-pedidos').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('table-pedidos').style.display = 'table';
+    document.getElementById('tbody-pedidos').innerHTML = pedidos.map(p => {
+      const dt = pedidoData(p);
+      const statusAtual = p.status || 'novo';
+      return `
+      <tr>
+        <td style="font-family:'Cormorant Garamond',serif;font-size:0.9rem;color:var(--gold);">
+          <span class="order-num-text">${p.numeroPedido||p.id.slice(0,8)}</span>
+          <button type="button" class="copy-btn-sm" onclick="copyOrderNumberAdmin(this)" title="Copiar número do pedido">⧉</button>
+          ${p.codigoRastreio ? `<div class="tracking-note">Rastreio: ${p.codigoRastreio}</div>` : ''}
+        </td>
+        <td>${p.cliente?.nome||'—'}</td>
+        <td style="font-size:0.7rem;color:var(--text-s);">${(p.itens||[]).map(i=>i.nome).join(', ')||'—'}</td>
+        <td><span class="price-cell">R$ ${Number(p.total||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></td>
+        <td style="font-size:0.72rem;">${p.pagamento||'—'}${renderPagamentoBadge(p)}</td>
+        <td><span class="status-pill ${STATUS_PILL_CLASS[statusAtual]||'status-draft'}">${STATUS_LABELS[statusAtual]||statusAtual}</span></td>
+        <td>
+          <select class="status-select" data-id="${p.id}" onchange="onStatusSelectChange(this)">
+            ${Object.keys(STATUS_LABELS).map(s => `<option value="${s}" ${s===statusAtual?'selected':''}>${STATUS_LABELS[s]}</option>`).join('')}
+          </select>
+        </td>
+        <td style="font-size:0.68rem;color:var(--text-s);">${dt ? dt.toLocaleDateString('pt-BR') : '—'}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('loading-pedidos').innerHTML = '';
+    document.getElementById('empty-pedidos').style.display = 'block';
+  }
+}
+
+// ── PEDIDOS POR DIA DA SEMANA ──
+function renderWeekdayChart(pedidos) {
+  const el = document.getElementById('weekday-chart');
+  if (!el) return;
+  const labels = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const counts = [0,0,0,0,0,0,0];
+  pedidos.forEach(p => {
+    const dt = pedidoData(p);
+    if (dt) counts[dt.getDay()]++;
+  });
+  const max = Math.max(1, ...counts);
+  el.innerHTML = counts.map((c, i) => `
+    <div class="weekday-bar-col${c === max && c > 0 ? ' peak' : ''}">
+      <span class="weekday-bar-count">${c}</span>
+      <div class="weekday-bar" style="height:${c > 0 ? Math.max(4, (c / max) * 100) : 2}px;"></div>
+      <span class="weekday-bar-label">${labels[i]}</span>
+    </div>
+  `).join('');
+}
+
+// ── CLIENTES ──
+let clientesAgregados = [];
+function agregarClientes(pedidos) {
+  const map = new Map();
+  pedidos.forEach(p => {
+    const key = (p.cliente?.email || p.cliente?.telefone || p.cliente?.nome || '—').toLowerCase();
+    if (!map.has(key)) {
+      map.set(key, {
+        nome: p.cliente?.nome || '—',
+        email: p.cliente?.email || '',
+        telefone: p.cliente?.telefone || '',
+        cidade: p.endereco?.cidade || '',
+        estado: p.endereco?.estado || '',
+        pedidos: 0,
+        total: 0,
+        ultimo: null,
+      });
+    }
+    const c = map.get(key);
+    c.pedidos++;
+    c.total += Number(p.total) || 0;
+    const dt = pedidoData(p);
+    if (dt && (!c.ultimo || dt > c.ultimo)) c.ultimo = dt;
+  });
+  return Array.from(map.values()).sort((a, b) => b.total - a.total);
+}
+
+window.renderClientesTable = function() {
+  const busca = (document.getElementById('clientes-busca')?.value || '').toLowerCase().trim();
+  const filtrados = clientesAgregados.filter(c =>
+    !busca || c.nome.toLowerCase().includes(busca) || c.email.toLowerCase().includes(busca)
+  );
+
+  document.getElementById('loading-clientes').style.display = 'none';
+
+  if (clientesAgregados.length === 0) {
+    document.getElementById('empty-clientes').style.display = 'block';
+    document.getElementById('table-clientes').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('empty-clientes').style.display = 'none';
+  document.getElementById('table-clientes').style.display = 'table';
+  document.getElementById('tbody-clientes').innerHTML = filtrados.map(c => `
+    <tr>
+      <td><div class="product-cell-name" style="font-size:0.78rem;">${c.nome}</div></td>
+      <td style="font-size:0.7rem;color:var(--text-s);">${c.email || '—'}${c.telefone ? '<br>' + c.telefone : ''}</td>
+      <td style="font-size:0.78rem;">${c.cidade ? `${c.cidade}/${c.estado}` : '—'}</td>
+      <td>${c.pedidos}</td>
+      <td><span class="price-cell">R$ ${c.total.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</span></td>
+      <td style="font-size:0.68rem;color:var(--text-s);">${c.ultimo ? c.ultimo.toLocaleDateString('pt-BR') : '—'}</td>
+    </tr>
+  `).join('');
+};
+
+// ── TOGGLE STATUS ──
+let deleteId = null;
+window.toggleStatus = async function(id, status) {
+  const novo = status === 'ativo' ? 'inativo' : 'ativo';
+  try {
+    await updateDoc(doc(db,'produtos',id), { status: novo });
+    showToast(`Produto ${novo === 'ativo' ? 'ativado' : 'pausado'} com sucesso`);
+    loadProdutos();
+  } catch(e) { showToast('Erro ao atualizar status'); }
+};
+
+// ── DELETE ──
+window.confirmDelete = function(id, nome) {
+  deleteId = id;
+  document.querySelector('.modal-text').textContent = `Tem certeza que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`;
+  document.getElementById('confirm-modal').classList.add('open');
+  document.getElementById('confirm-delete-btn').onclick = async () => {
+    try {
+      await deleteDoc(doc(db,'produtos',deleteId));
+      closeModal();
+      showToast('Produto excluído com sucesso');
+      loadProdutos();
+    } catch(e) { showToast('Erro ao excluir produto'); }
+  };
+};
+window.closeModal = () => document.getElementById('confirm-modal').classList.remove('open');
+
+// ── LOGOUT ──
+window.logout = async function() {
+  await signOut(auth);
+  window.location.href = '/admin';
+};
+
+// ── SIDEBAR — recolher/expandir em qualquer largura ──
+// No celular/tablet estreito (≤1024px) vira menu-gaveta (some por completo,
+// some com overlay escuro atrás). Em telas maiores, a seta apenas recolhe a
+// sidebar pra dar mais espaço ao conteúdo — e essa preferência fica salva
+// (localStorage), útil pra quem usa um tablet com pouco espaço na tela.
+if (localStorage.getItem('sidebarCollapsed') === '1') {
+  document.body.classList.add('sidebar-collapsed');
+}
+window.toggleSidebar = function() {
+  if (window.matchMedia('(max-width:1024px)').matches) {
+    document.body.classList.toggle('sidebar-mobile-open');
+  } else {
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+  }
+};
+window.closeSidebar = function() {
+  if (window.matchMedia('(max-width:1024px)').matches) {
+    document.body.classList.remove('sidebar-mobile-open');
+  } else {
+    document.body.classList.add('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', '1');
+  }
+};
+
+// ── TOAST ──
+let toastTimer;
+window.showToast = function(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+window.copyOrderNumberAdmin = function(btn) {
+  const num = btn.previousElementSibling.textContent.trim();
+  const done = () => showToast('Número do pedido copiado!');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(num).then(done).catch(done);
+  } else {
+    const tmp = document.createElement('input');
+    tmp.value = num;
+    document.body.appendChild(tmp);
+    tmp.select();
+    document.execCommand('copy');
+    document.body.removeChild(tmp);
+    done();
+  }
+};
+</script>
+<script src="../assets/js/admin-tour.js?v=1"></script>
+</body>
+</html>

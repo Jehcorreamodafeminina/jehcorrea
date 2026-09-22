@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finalizar compra — Jeh Corrêa Moda Feminina</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,600&family=Alex+Brush&family=Jost:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .checkout-wrap{ max-width:1100px; margin:0 auto; padding:calc(var(--nav-h) + 50px) 32px 100px; display:grid; grid-template-columns:1.3fr 1fr; gap:60px; align-items:start; }
+  .checkout-steps{ display:flex; gap:10px; margin-bottom:36px; }
+  .checkout-step{ font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-soft); padding-bottom:8px; border-bottom:2px solid var(--cream-deep); flex:1; }
+  .checkout-step.active{ color:var(--bronze-deep); border-color:var(--bronze-deep); font-weight:500; }
+  .co-card{ background:var(--white); border:1px solid var(--cream-deep); padding:28px 30px; margin-bottom:22px; }
+  .co-card h2{ font-size:16px; margin:0 0 20px; display:flex; align-items:center; gap:10px; }
+  .co-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .co-grid.three{ grid-template-columns:1fr 1fr 1fr; }
+  .co-field{ margin-bottom:16px; }
+  .co-field label{ display:block; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px; }
+  .co-field input, .co-field select{
+    width:100%; padding:11px 12px; border:1px solid var(--cream-deep); background:var(--cream);
+    font-family:'Jost',sans-serif; font-size:14px; color:var(--ink); outline:none; transition:border-color .2s;
+  }
+  .co-field input:focus, .co-field select:focus{ border-color:var(--bronze-deep); }
+  .co-field .err{ font-size:11px; color:#B23A3A; margin-top:5px; display:none; }
+  .co-field.invalid input, .co-field.invalid select{ border-color:#B23A3A; }
+  .co-field.invalid .err{ display:block; }
+
+  .pay-methods{ display:flex; gap:10px; margin-bottom:20px; }
+  .pay-method{
+    flex:1; padding:14px 10px; text-align:center; border:1px solid var(--cream-deep); cursor:pointer;
+    font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); background:var(--cream);
+    transition:all .2s;
+  }
+  .pay-method.active{ border-color:var(--bronze-deep); color:var(--bronze-deep); background:var(--white); font-weight:500; }
+  .pay-panel{ display:none; }
+  .pay-panel.active{ display:block; }
+  #cardPaymentBrick_container{ min-height:260px; }
+
+  .summary{ position:sticky; top:calc(var(--nav-h) + 24px); background:var(--white); border:1px solid var(--cream-deep); padding:26px 28px; }
+  .summary h2{ font-size:16px; margin:0 0 18px; }
+  .summary-item{ display:flex; justify-content:space-between; gap:10px; font-size:13px; padding:10px 0; border-bottom:1px solid var(--cream-deep); }
+  .summary-item .nm{ color:var(--ink); }
+  .summary-item .meta{ display:block; font-size:11px; color:var(--ink-soft); }
+  .summary-row{ display:flex; justify-content:space-between; font-size:13px; padding:8px 0; color:var(--ink-soft); }
+  .summary-total{ display:flex; justify-content:space-between; align-items:baseline; padding-top:14px; margin-top:6px; border-top:1px solid var(--cream-deep); }
+  .summary-total b{ font-family:'Playfair Display',serif; font-size:24px; color:var(--bronze-deep); }
+
+  .co-empty{ text-align:center; padding:80px 20px; }
+  .pix-box{ text-align:center; padding:20px 0; }
+  .pix-box img{ width:200px; height:200px; margin:0 auto 16px; border:1px solid var(--cream-deep); }
+  .pix-code{ font-size:11px; background:var(--cream); border:1px solid var(--cream-deep); padding:12px; word-break:break-all; margin-bottom:12px; }
+  .boleto-box{ text-align:center; padding:10px 0; }
+  .status-badge{ display:inline-block; padding:6px 14px; border-radius:999px; font-size:11px; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px; }
+  .status-badge.pending{ background:#FFF3D6; color:#8A6820; }
+  .status-badge.ok{ background:#E4F3E9; color:#1F6B41; }
+  .status-badge.err{ background:#FBE4E1; color:#B23A3A; }
+
+  @media(max-width:900px){ .checkout-wrap{ grid-template-columns:1fr; } .summary{ position:static; } }
+</style>
+</head>
+<body>
+
+<header class="site-header is-scrolled" data-header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--bronze-deep)"/><text x="50" y="63" font-family="Playfair Display" font-size="38" text-anchor="middle" fill="var(--bronze-deep)">JC</text></svg>
+      <span class="brand-word">Jeh Corrêa<small>Moda Feminina</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="index.html#novidades">Novidades</a>
+      <a href="colecao.html">Coleção</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" aria-label="Sacola de compras" data-cart-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="bag-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div id="checkout-content"></div>
+</main>
+
+<footer class="footer">
+  <div class="footer-bottom" style="max-width:var(--container);margin:0 auto;padding:30px 32px;">
+    <p>Jeh Corrêa Moda Feminina © 2026 — ambiente de compra segura via Mercado Pago.</p>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ── CONFIG — preencher com as credenciais reais antes de publicar ── */
+const firebaseConfig = {
+  apiKey: "COLE_AQUI_SUA_API_KEY_DO_FIREBASE",
+  authDomain: "jeh-correa-moda.firebaseapp.com",
+  projectId: "jeh-correa-moda",
+  storageBucket: "jeh-correa-moda.firebasestorage.app",
+  messagingSenderId: "COLE_AQUI_SEU_MESSAGING_SENDER_ID",
+  appId: "COLE_AQUI_SEU_APP_ID"
+};
+const MP_PUBLIC_KEY = "COLE_AQUI_SUA_PUBLIC_KEY_DO_MERCADO_PAGO"; // Public Key (não é a Access Token — essa é segura de expor aqui)
+const FRETE_GRATIS_ACIMA_DE = 299;
+const FRETE_PADRAO = 29.9;
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const content = document.getElementById('checkout-content');
+const cart = window.JCCart;
+const itens = cart ? cart.getItems() : [];
+
+if (!itens.length) {
+  content.innerHTML = `
+    <div class="co-empty">
+      <div class="eyebrow" style="justify-content:center;">Sua sacola</div>
+      <h1 style="margin:16px 0 20px;">Sua sacola está vazia.</h1>
+      <a class="btn btn-fill" href="colecao.html">Ver coleção</a>
+    </div>`;
+} else {
+  montarCheckout();
+}
+
+function fmt(v){ return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
+
+function montarCheckout(){
+  const subtotal = cart.getTotal();
+  const frete = subtotal >= FRETE_GRATIS_ACIMA_DE ? 0 : FRETE_PADRAO;
+  const total = subtotal + frete;
+
+  content.innerHTML = `
+  <div class="checkout-wrap">
+    <div>
+      <div class="checkout-steps">
+        <div class="checkout-step active">1. Seus dados</div>
+        <div class="checkout-step active">2. Entrega</div>
+        <div class="checkout-step active">3. Pagamento</div>
+      </div>
+
+      <form id="co-form">
+        <div class="co-card">
+          <h2>👤 Seus dados</h2>
+          <div class="co-grid">
+            <div class="co-field"><label for="f-nome">Nome completo</label><input type="text" id="f-nome" required></div>
+            <div class="co-field"><label for="f-email">E-mail</label><input type="email" id="f-email" required></div>
+          </div>
+          <div class="co-grid">
+            <div class="co-field"><label for="f-telefone">Telefone / WhatsApp</label><input type="tel" id="f-telefone" placeholder="(00) 00000-0000" required></div>
+            <div class="co-field"><label for="f-cpf">CPF</label><input type="text" id="f-cpf" placeholder="000.000.000-00" required></div>
+          </div>
+        </div>
+
+        <div class="co-card">
+          <h2>📦 Endereço de entrega</h2>
+          <div class="co-grid three">
+            <div class="co-field"><label for="f-cep">CEP</label><input type="text" id="f-cep" placeholder="00000-000" required></div>
+            <div class="co-field" style="grid-column:span 2;"><label for="f-rua">Rua</label><input type="text" id="f-rua" required></div>
+          </div>
+          <div class="co-grid three">
+            <div class="co-field"><label for="f-numero">Número</label><input type="text" id="f-numero" required></div>
+            <div class="co-field"><label for="f-complemento">Complemento</label><input type="text" id="f-complemento"></div>
+            <div class="co-field"><label for="f-bairro">Bairro</label><input type="text" id="f-bairro" required></div>
+          </div>
+          <div class="co-grid">
+            <div class="co-field"><label for="f-cidade">Cidade</label><input type="text" id="f-cidade" required></div>
+            <div class="co-field"><label for="f-uf">Estado (UF)</label><input type="text" id="f-uf" maxlength="2" placeholder="SP" required></div>
+          </div>
+        </div>
+
+        <div class="co-card">
+          <h2>💳 Forma de pagamento</h2>
+          <div class="pay-methods">
+            <div class="pay-method active" data-pay="pix">Pix</div>
+            <div class="pay-method" data-pay="cartao">Cartão</div>
+            <div class="pay-method" data-pay="boleto">Boleto</div>
+          </div>
+
+          <div class="pay-panel active" data-panel="pix">
+            <p style="font-size:13px;color:var(--ink-soft);">Ao confirmar, geramos um QR Code Pix. O pagamento é aprovado em poucos minutos.</p>
+          </div>
+          <div class="pay-panel" data-panel="cartao">
+            <div id="cardPaymentBrick_container"></div>
+          </div>
+          <div class="pay-panel" data-panel="boleto">
+            <p style="font-size:13px;color:var(--ink-soft);">O boleto vence em 3 dias úteis. Vamos te avisar por e-mail quando compensar.</p>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-fill" id="btn-finalizar" style="width:100%;justify-content:center;">Finalizar compra — ${fmt(total)}</button>
+        <p style="font-size:11px;color:var(--ink-soft);text-align:center;margin-top:12px;">Pagamento processado com segurança pelo Mercado Pago. Não armazenamos dados do seu cartão.</p>
+      </form>
+    </div>
+
+    <aside class="summary">
+      <h2>Resumo do pedido</h2>
+      ${itens.map(i => `
+        <div class="summary-item">
+          <div><div class="nm">${i.nome}</div>${i.tamanho ? `<span class="meta">Tamanho ${i.tamanho} · qtd ${i.qty}</span>` : `<span class="meta">qtd ${i.qty}</span>`}</div>
+          <div>${fmt(i.preco * i.qty)}</div>
+        </div>`).join('')}
+      <div class="summary-row"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+      <div class="summary-row"><span>Frete</span><span>${frete === 0 ? 'Grátis' : fmt(frete)}</span></div>
+      <div class="summary-total"><span>Total</span><b>${fmt(total)}</b></div>
+    </aside>
+  </div>`;
+
+  wireForm(subtotal, frete, total);
+}
+
+function wireForm(subtotal, frete, total){
+  let metodoPagamento = 'pix';
+  let cardBrickController = null;
+
+  document.querySelectorAll('.pay-method').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.pay-method').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.pay-panel').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      metodoPagamento = el.getAttribute('data-pay');
+      document.querySelector(`[data-panel="${metodoPagamento}"]`).classList.add('active');
+      if (metodoPagamento === 'cartao') montarCardBrick();
+    });
+  });
+
+  async function montarCardBrick(){
+    if (cardBrickController || !window.MercadoPago) return;
+    const mp = new window.MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+    const bricksBuilder = mp.bricks();
+    cardBrickController = await bricksBuilder.create('cardPayment', 'cardPaymentBrick_container', {
+      initialization: { amount: total },
+      callbacks: {
+        onReady: () => {},
+        onSubmit: (cardFormData) => new Promise((resolve, reject) => {
+          finalizarPedido('cartao', cardFormData).then(resolve).catch(reject);
+        }),
+        onError: (error) => console.error('Card Brick erro:', error),
+      },
+    });
+  }
+
+  document.getElementById('co-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (metodoPagamento === 'cartao') return; // o próprio Brick chama onSubmit
+    try { await finalizarPedido(metodoPagamento, null); } catch (e) { /* já mostrado ao usuário acima */ }
+  });
+
+  async function finalizarPedido(metodo, cardFormData){
+    const btn = document.getElementById('btn-finalizar');
+    btn.disabled = true;
+    btn.textContent = 'Processando...';
+
+    const cliente = {
+      nome: document.getElementById('f-nome').value.trim(),
+      email: document.getElementById('f-email').value.trim(),
+      telefone: document.getElementById('f-telefone').value.trim(),
+      cpf: document.getElementById('f-cpf').value.trim(),
+      endereco: {
+        cep: document.getElementById('f-cep').value.trim(),
+        rua: document.getElementById('f-rua').value.trim(),
+        numero: document.getElementById('f-numero').value.trim(),
+        complemento: document.getElementById('f-complemento').value.trim(),
+        bairro: document.getElementById('f-bairro').value.trim(),
+        cidade: document.getElementById('f-cidade').value.trim(),
+        uf: document.getElementById('f-uf').value.trim().toUpperCase(),
+      },
+    };
+
+    const numeroPedido = '#JC-' + Date.now().toString(36).toUpperCase();
+    const idempotencyKey = numeroPedido;
+
+    let mercadoPago = null;
+    let vencimento = null;
+
+    try {
+      if (metodo === 'pix') {
+        const resp = await fetch('/api/payment', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idempotencyKey,
+            body: {
+              transaction_amount: Number(total.toFixed(2)),
+              description: 'Pedido ' + numeroPedido + ' — Jeh Corrêa',
+              payment_method_id: 'pix',
+              payer: { email: cliente.email, first_name: cliente.nome.split(' ')[0], identification: { type: 'CPF', number: cliente.cpf.replace(/\D/g, '') } },
+            },
+          }),
+        });
+        const data = await resp.json();
+        if (!resp.ok || data.status === 'rejected') throw new Error(data.message || 'Pagamento recusado');
+        mercadoPago = { id: String(data.id), status: data.status };
+        await salvarPedidoEMostrarResultado(numeroPedido, cliente, metodo, mercadoPago, null, data);
+      } else if (metodo === 'boleto') {
+        const venc = new Date(); venc.setDate(venc.getDate() + 3);
+        vencimento = venc.toISOString();
+        const resp = await fetch('/api/payment', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idempotencyKey,
+            body: {
+              transaction_amount: Number(total.toFixed(2)),
+              description: 'Pedido ' + numeroPedido + ' — Jeh Corrêa',
+              payment_method_id: 'bolbradesco',
+              date_of_expiration: vencimento,
+              payer: {
+                email: cliente.email, first_name: cliente.nome.split(' ')[0],
+                identification: { type: 'CPF', number: cliente.cpf.replace(/\D/g, '') },
+                address: { zip_code: cliente.endereco.cep.replace(/\D/g, ''), street_name: cliente.endereco.rua, street_number: cliente.endereco.numero },
+              },
+            },
+          }),
+        });
+        const data = await resp.json();
+        if (!resp.ok || data.status === 'rejected') throw new Error(data.message || 'Não foi possível gerar o boleto');
+        mercadoPago = { id: String(data.id), status: data.status };
+        await salvarPedidoEMostrarResultado(numeroPedido, cliente, metodo, mercadoPago, vencimento, data);
+      } else if (metodo === 'cartao') {
+        const resp = await fetch('/api/payment', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            idempotencyKey,
+            body: {
+              transaction_amount: Number(total.toFixed(2)),
+              token: cardFormData.token,
+              description: 'Pedido ' + numeroPedido + ' — Jeh Corrêa',
+              installments: cardFormData.installments,
+              payment_method_id: cardFormData.payment_method_id,
+              issuer_id: cardFormData.issuer_id,
+              payer: { email: cardFormData.payer.email, identification: cardFormData.payer.identification },
+            },
+          }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.message || 'Pagamento recusado');
+        mercadoPago = { id: String(data.id), status: data.status };
+        await salvarPedidoEMostrarResultado(numeroPedido, cliente, metodo, mercadoPago, null, data);
+      }
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = 'Tentar novamente';
+      alert('Não foi possível processar o pagamento: ' + err.message + '\n\nVocê também pode finalizar pelo WhatsApp.');
+      throw err; // deixa o Card Payment Brick saber que falhou (senão ele acha que deu certo)
+    }
+  }
+
+  async function salvarPedidoEMostrarResultado(numeroPedido, cliente, metodo, mercadoPago, vencimento, mpData){
+    const pedido = {
+      numeroPedido, criadoEm: new Date().toISOString(),
+      status: 'novo', pagamento: metodo,
+      pagamentoConfirmado: mercadoPago.status === 'approved',
+      pagamentoConfirmadoEm: mercadoPago.status === 'approved' ? new Date().toISOString() : null,
+      mercadoPago, vencimento: vencimento || null,
+      cliente, itens: itens.map(i => ({ nome: i.nome, variante: i.tamanho, preco: i.preco, qty: i.qty, sku: i.sku })),
+      frete: { nome: frete === 0 ? 'Grátis' : 'Padrão', valor: frete },
+      total: Number(total.toFixed(2)),
+    };
+    try { await addDoc(collection(db, 'pedidos'), pedido); } catch (e) { console.error('Erro ao salvar pedido no Firestore:', e); }
+
+    cart.clear();
+    mostrarResultado(metodo, pedido, mpData);
+  }
+
+  function mostrarResultado(metodo, pedido, mpData){
+    const content = document.getElementById('checkout-content');
+    if (metodo === 'pix') {
+      const qr = mpData?.point_of_interaction?.transaction_data;
+      content.innerHTML = `
+        <div class="co-empty">
+          <div class="status-badge pending" id="pix-status">Aguardando pagamento</div>
+          <h1 style="margin:0 0 20px;">Pague com Pix pra confirmar seu pedido ${pedido.numeroPedido}</h1>
+          <div class="pix-box">
+            ${qr?.qr_code_base64 ? `<img src="data:image/png;base64,${qr.qr_code_base64}" alt="QR Code Pix">` : ''}
+            <div class="pix-code">${qr?.qr_code || 'Código Pix indisponível — finalize pelo WhatsApp.'}</div>
+            <p style="font-size:12px;color:var(--ink-soft);">Copie o código acima no app do seu banco, ou escaneie o QR Code.</p>
+          </div>
+        </div>`;
+      pollPagamento(pedido.numeroPedido);
+    } else if (metodo === 'boleto') {
+      const link = mpData?.transaction_details?.external_resource_url;
+      content.innerHTML = `
+        <div class="co-empty">
+          <div class="status-badge pending">Boleto gerado</div>
+          <h1 style="margin:0 0 20px;">Pedido ${pedido.numeroPedido} confirmado!</h1>
+          <div class="boleto-box">
+            <p style="font-size:14px;color:var(--ink-soft);margin-bottom:20px;">Vencimento em ${new Date(pedido.vencimento).toLocaleDateString('pt-BR')}. Você também recebeu por e-mail.</p>
+            ${link ? `<a class="btn btn-fill" href="${link}" target="_blank">Ver / imprimir boleto</a>` : ''}
+          </div>
+        </div>`;
+    } else {
+      const ok = pedido.pagamentoConfirmado;
+      content.innerHTML = `
+        <div class="co-empty">
+          <div class="status-badge ${ok ? 'ok' : 'err'}">${ok ? 'Pagamento aprovado' : 'Pagamento não aprovado'}</div>
+          <h1 style="margin:0 0 20px;">${ok ? `Pedido ${pedido.numeroPedido} confirmado!` : 'Não foi possível aprovar o pagamento'}</h1>
+          <a class="btn btn-fill" href="${ok ? 'index.html' : 'checkout.html'}">${ok ? 'Voltar à loja' : 'Tentar novamente'}</a>
+        </div>`;
+    }
+  }
+
+  function pollPagamento(numeroPedido){
+    const el = document.getElementById('pix-status');
+    const iv = setInterval(async () => {
+      try {
+        const res = await fetch('/api/payment-status?pedido=' + encodeURIComponent(numeroPedido));
+        const data = await res.json();
+        if (data.pagamentoConfirmado) {
+          clearInterval(iv);
+          if (el) { el.textContent = 'Pagamento confirmado!'; el.className = 'status-badge ok'; }
+        }
+      } catch (e) { /* tenta de novo no próximo ciclo */ }
+    }, 4000);
+  }
+}
+</script>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<script src="assets/js/cart.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "version": 2,
+  "name": "jeh-correa-moda",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/colecao", "destination": "/colecao.html" },
+    { "source": "/sobre", "destination": "/sobre.html" },
+    { "source": "/contato", "destination": "/contato.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/dashboard", "destination": "/admin/dashboard.html" },
+    { "source": "/admin/produto", "destination": "/admin/produto.html" },
+    { "source": "/admin/cupons", "destination": "/admin/cupons.html" },
+    { "source": "/admin/configuracoes", "destination": "/admin/configuracoes.html" },
+    { "source": "/admin/blog", "destination": "/admin/blog.html" },
+    { "source": "/admin/blog-post", "destination": "/admin/blog-post.html" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" }
+  ],
+  "crons": [
+    { "path": "/api/check-boletos", "schedule": "0 12 * * *" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
+      ]
+    }
+  ]
+}
