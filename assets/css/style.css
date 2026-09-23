@@ -1,18 +1,18 @@
 /* ============================================================
    Jeh Corrêa Moda Feminina — sistema de design
-   Fundo branco, paleta coral/terracota, tipografia sans-serif —
-   mais leve e menos formal que a versão anterior.
+   Tons dourado/creme da identidade real da marca (Instagram),
+   fundo claro (não branco puro) + tipografia sans-serif leve.
    ============================================================ */
 
 :root{
-  --cream:        #FFFFFF;
-  --cream-soft:   #FFF4F1;
-  --cream-deep:   #F6DCD4;
-  --bronze:       #E1614A;
-  --bronze-deep:  #C2432E;
-  --ink:          #2B2522;
-  --ink-soft:     #8A7B74;
-  --blush:        #F4B8A8;
+  --cream:        #FAF4EA;
+  --cream-soft:   #F3E7D6;
+  --cream-deep:   #E8D4B8;
+  --bronze:       #A9793C;
+  --bronze-deep:  #7A5726;
+  --ink:          #2E2418;
+  --ink-soft:     #8C7A62;
+  --blush:        #D9B98A;
   --white:        #FFFFFF;
 
   --font-display: 'Poppins', sans-serif;
@@ -86,10 +86,10 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:700; color:var(--bronze-d
 
 /* ---------- header ---------- */
 .site-header{
-  position:sticky; top:0; z-index:70; background:rgba(255,255,255,0);
+  position:sticky; top:0; z-index:70; background:rgba(250,244,234,0);
   border-bottom:1px solid transparent; transition:background .4s ease, border-color .4s ease, box-shadow .4s ease;
 }
-.site-header.is-scrolled{ background:rgba(255,255,255,.92); backdrop-filter:blur(10px); border-color:var(--cream-deep); box-shadow:0 10px 30px -20px rgba(58,46,34,.3); }
+.site-header.is-scrolled{ background:rgba(250,244,234,.92); backdrop-filter:blur(10px); border-color:var(--cream-deep); box-shadow:0 10px 30px -20px rgba(58,46,34,.3); }
 .nav{ height:var(--nav-h); display:flex; align-items:center; justify-content:space-between; gap:24px; }
 .brand{ display:flex; align-items:center; gap:12px; }
 .brand svg{ width:44px; height:44px; }
