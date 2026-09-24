@@ -23,14 +23,14 @@
     renderDrawer();
   }
 
-  function keyOf(item) { return (item.sku || item.nome) + '::' + (item.tamanho || ''); }
+  function keyOf(item) { return (item.sku || item.nome) + '::' + (item.tamanho || '') + '::' + (item.cor || ''); }
 
   function add(item) {
     var items = readCart();
     var k = keyOf(item);
     var existing = items.find(function (i) { return keyOf(i) === k; });
     if (existing) { existing.qty += item.qty || 1; }
-    else { items.push({ sku: item.sku || null, nome: item.nome, tamanho: item.tamanho || null, preco: Number(item.preco) || 0, qty: item.qty || 1 }); }
+    else { items.push({ sku: item.sku || null, nome: item.nome, tamanho: item.tamanho || null, cor: item.cor || null, preco: Number(item.preco) || 0, qty: item.qty || 1 }); }
     writeCart(items);
     openDrawer();
   }
@@ -148,7 +148,7 @@
         '<div class="jc-cart-item-media">[ FOTO ]</div>' +
         '<div class="jc-cart-item-info">' +
         '<b>' + escapeHtml(i.nome) + '</b>' +
-        (i.tamanho ? '<span>Tamanho: ' + escapeHtml(i.tamanho) + '</span>' : '') +
+        (i.tamanho || i.cor ? '<span>' + [i.tamanho ? 'Tamanho: ' + escapeHtml(i.tamanho) : null, i.cor ? 'Cor: ' + escapeHtml(i.cor) : null].filter(Boolean).join(' · ') + '</span>' : '') +
         '<div class="jc-cart-qty">' +
         '<button type="button" data-act="dec" data-k="' + escapeAttr(k) + '" aria-label="Diminuir quantidade">−</button>' +
         '<span>' + i.qty + '</span>' +
@@ -217,32 +217,72 @@
     });
   }
 
-  /* ---------- injeta "Adicionar à sacola" nos cards de produto existentes
-     (lê nome/preço direto do texto já visível no card — não precisa marcar
-     cada card manualmente com data-attributes) ---------- */
-  function autoWireCards() {
+  /* ---------- liga cores, tamanhos e o botão de compra dos cards de produto
+     (a seleção de cor/tamanho fica só no card — sem página de produto própria
+     ainda; ao clicar em "Escolher opções" valida que um tamanho foi
+     escolhido antes de adicionar à sacola) ---------- */
+  function wireProductCards() {
     document.querySelectorAll('.card').forEach(function (card) {
-      if (card.querySelector('[data-add-to-cart]') || card.hasAttribute('data-no-cart')) return;
-      var media = card.querySelector('.card-media');
-      var h3 = card.querySelector('.card-body h3');
-      var priceEl = card.querySelector('.card-price .now');
-      if (!media || !h3 || !priceEl) return;
-      var preco = parseFloat(priceEl.textContent.replace(/[^\d,]/g, '').replace(',', '.'));
-      if (!isFinite(preco)) return;
+      if (card.hasAttribute('data-no-cart')) return;
+      var buyBtn = card.querySelector('.card-buy');
+      if (!buyBtn) return;
 
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'card-quickadd';
-      btn.setAttribute('data-add-to-cart', '');
-      btn.setAttribute('aria-label', 'Adicionar à sacola: ' + h3.textContent.trim());
-      btn.setAttribute('data-nome', h3.textContent.trim());
-      btn.setAttribute('data-preco', String(preco));
-      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>Adicionar à sacola</span>';
-      media.appendChild(btn);
+      var swatches = card.querySelectorAll('.swatch');
+      swatches.forEach(function (sw) {
+        sw.addEventListener('click', function () {
+          swatches.forEach(function (s) { s.classList.remove('is-active'); s.setAttribute('aria-pressed', 'false'); });
+          sw.classList.add('is-active');
+          sw.setAttribute('aria-pressed', 'true');
+        });
+      });
 
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        add({ sku: null, nome: h3.textContent.trim(), preco: preco, tamanho: null, qty: 1 });
+      var sizeChips = card.querySelectorAll('.size-chip');
+      sizeChips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          if (chip.disabled) return;
+          sizeChips.forEach(function (c) { c.classList.remove('is-active'); c.setAttribute('aria-pressed', 'false'); });
+          chip.classList.add('is-active');
+          chip.setAttribute('aria-pressed', 'true');
+          var sizesBlock = card.querySelector('.card-sizes');
+          if (sizesBlock) sizesBlock.classList.remove('is-invalid');
+        });
+      });
+
+      buyBtn.addEventListener('click', function () {
+        var h3 = card.querySelector('.card-body h3');
+        var priceEl = card.querySelector('.card-price .now');
+        if (!h3 || !priceEl) return;
+        var preco = parseFloat(priceEl.textContent.replace(/[^\d,]/g, '').replace(',', '.'));
+        if (!isFinite(preco)) return;
+
+        var activeSize = card.querySelector('.size-chip.is-active');
+        if (sizeChips.length && !activeSize) {
+          var sizesBlock = card.querySelector('.card-sizes');
+          if (sizesBlock) {
+            sizesBlock.classList.remove('is-invalid');
+            void sizesBlock.offsetWidth;
+            sizesBlock.classList.add('is-invalid');
+          }
+          return;
+        }
+
+        var activeSwatch = card.querySelector('.swatch.is-active');
+        add({
+          sku: null,
+          nome: h3.textContent.trim(),
+          preco: preco,
+          tamanho: activeSize ? activeSize.getAttribute('data-size') : null,
+          cor: activeSwatch ? activeSwatch.getAttribute('data-color') : null,
+          qty: 1,
+        });
+
+        var original = buyBtn.textContent;
+        buyBtn.textContent = 'Adicionado ✓';
+        buyBtn.classList.add('is-added');
+        setTimeout(function () {
+          buyBtn.textContent = original;
+          buyBtn.classList.remove('is-added');
+        }, 1300);
       });
     });
   }
@@ -250,7 +290,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     updateBadges();
     wireButtons();
-    autoWireCards();
+    wireProductCards();
   });
 
   window.JCCart = { add: add, remove: remove, setQty: setQty, getItems: readCart, getTotal: total, getCount: count, clear: clear, open: openDrawer, close: closeDrawer, fmtBRL: fmtBRL };
