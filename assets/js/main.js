@@ -31,6 +31,39 @@
     });
   }
 
+  /* ---------- hero: reveal wipe + cursor parallax ---------- */
+  var heroMedia = document.querySelector(".hero-media");
+  if (heroMedia) {
+    var heroImg = heroMedia.querySelector("img");
+    setTimeout(function () { heroMedia.classList.add("is-revealed"); }, reduceMotion ? 0 : 500);
+
+    var canParallax = !reduceMotion && heroImg && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    if (canParallax) {
+      var moveX, moveY;
+      if (window.gsap) {
+        window.gsap.set(heroImg, { scale: 1.08 });
+        moveX = window.gsap.quickTo(heroImg, "x", { duration: 0.7, ease: "power3.out" });
+        moveY = window.gsap.quickTo(heroImg, "y", { duration: 0.7, ease: "power3.out" });
+      } else {
+        heroImg.style.transform = "scale(1.08)";
+      }
+      heroMedia.addEventListener("mousemove", function (e) {
+        var r = heroMedia.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+        heroMedia.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
+        heroMedia.style.setProperty("--my", (py * 100).toFixed(1) + "%");
+        if (moveX && moveY) {
+          moveX((px - 0.5) * -22);
+          moveY((py - 0.5) * -14);
+        }
+      });
+      heroMedia.addEventListener("mouseleave", function () {
+        if (moveX && moveY) { moveX(0); moveY(0); }
+      });
+    }
+  }
+
   /* ---------- header on scroll ---------- */
   var header = document.querySelector("[data-header]");
   var ring = document.querySelector("[data-progress-ring]");

@@ -232,15 +232,12 @@
 
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'card-wish';
-      btn.style.right = card.querySelector('.card-wish') ? '56px' : '12px';
+      btn.className = 'card-quickadd';
       btn.setAttribute('data-add-to-cart', '');
-      btn.setAttribute('aria-label', 'Adicionar à sacola');
+      btn.setAttribute('aria-label', 'Adicionar à sacola: ' + h3.textContent.trim());
       btn.setAttribute('data-nome', h3.textContent.trim());
       btn.setAttribute('data-preco', String(preco));
-      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M9 12v0M15 12v0"/></svg>';
-      btn.style.opacity = '1';
-      btn.style.transform = 'none';
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span>Adicionar à sacola</span>';
       media.appendChild(btn);
 
       btn.addEventListener('click', function (e) {
