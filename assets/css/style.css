@@ -355,4 +355,7 @@ h1,h2,h3{ font-family:var(--font-display); font-weight:700; color:var(--ink); ma
   .hero-media img{ clip-path:inset(0) !important; transform:none !important; }
   .hero-media::before{ display:none !important; }
   .card:hover{ transform:none !important; }
+  /* faixa promocional: só texto repetido rolando, sem risco de desconforto —
+     mantemos sempre animada mesmo para quem pede reduzir movimento */
+  .announce-track{ animation:marquee 22s linear infinite !important; }
 }
