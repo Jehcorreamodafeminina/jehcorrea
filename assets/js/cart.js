@@ -310,5 +310,5 @@
     wireProductCards();
   });
 
-  window.JCCart = { add: add, remove: remove, setQty: setQty, getItems: readCart, getTotal: total, getCount: count, clear: clear, open: openDrawer, close: closeDrawer, fmtBRL: fmtBRL };
+  window.JCCart = { add: add, remove: remove, setQty: setQty, getItems: readCart, getTotal: total, getCount: count, clear: clear, open: openDrawer, close: closeDrawer, fmtBRL: fmtBRL, wireProductCards: wireProductCards };
 })();

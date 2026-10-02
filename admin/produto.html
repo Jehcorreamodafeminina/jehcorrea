@@ -391,6 +391,13 @@ select.form-input { appearance:none; -webkit-appearance:none; background-image:u
           </div>
           <div class="form-row single">
             <div class="form-group">
+              <label class="form-label">Cores disponíveis</label>
+              <input type="text" class="form-input" id="cores" placeholder="Ex: Marrom:#6B4A3A, Preto:#171412, Cru:#EFE6D8" oninput="updatePreview()">
+              <div class="form-hint">Formato "Nome:#hex", separado por vírgula. Deixe em branco se a peça não tiver variação de cor.</div>
+            </div>
+          </div>
+          <div class="form-row single">
+            <div class="form-group">
               <label class="form-label">Badge / Etiqueta</label>
               <select class="form-input" id="badge">
                 <option value="">Sem badge</option>
@@ -670,6 +677,7 @@ async function loadProduct(id) {
     document.getElementById('tamanho').value = p.tamanho||'';
     tamanhosSelecionados = new Set(p.tamanhos || []);
     document.getElementById('tamanhos').value = (p.tamanhos||[]).join(', ');
+    document.getElementById('cores').value = (p.cores||[]).map(function(c){ return c.nome + ':' + c.hex; }).join(', ');
     renderTamanhoChips();
     document.getElementById('acabamento').value = p.acabamento||'Algodão';
     document.getElementById('badge').value = p.badge||'';
@@ -917,6 +925,11 @@ window.salvarProduto = async function(status) {
 
   const tamanhos = document.getElementById('tamanhos').value
     .split(',').map(t => t.trim()).filter(Boolean);
+  const cores = document.getElementById('cores').value
+    .split(',').map(c => c.trim()).filter(Boolean).map(c => {
+      const partes = c.split(':');
+      return { nome: (partes[0] || '').trim(), hex: (partes[1] || '#CCCCCC').trim() };
+    });
 
   const nome = document.getElementById('nome').value.trim();
   const slug = existingSlug || await gerarSlugUnico(nome, editingId);
@@ -935,6 +948,7 @@ window.salvarProduto = async function(status) {
     peso: parseFloat(document.getElementById('peso').value) || null,
     tamanho: document.getElementById('tamanho').value.trim(),
     tamanhos,
+    cores,
     acabamento: document.getElementById('acabamento').value,
     badge: document.getElementById('badge').value || null,
     seloOferta: document.getElementById('selo-oferta').value || null,
