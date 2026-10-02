@@ -217,15 +217,29 @@
     });
   }
 
-  /* ---------- liga cores, tamanhos e o botão de compra dos cards de produto
-     (a seleção de cor/tamanho fica só no card — sem página de produto própria
-     ainda; ao clicar em "Escolher opções" valida que um tamanho foi
-     escolhido antes de adicionar à sacola) ---------- */
+  /* ---------- card de produto: foto e preço ficam em destaque; cor/tamanho
+     só aparecem depois que a cliente clica em "Comprar" (pedido explícito
+     da dona da loja — card anterior mostrava tudo de uma vez e "poluía")
+     ---------- */
   function wireProductCards() {
     document.querySelectorAll('.card').forEach(function (card) {
       if (card.hasAttribute('data-no-cart')) return;
       var buyBtn = card.querySelector('.card-buy');
-      if (!buyBtn) return;
+      var options = card.querySelector('.card-options');
+      var confirmBtn = card.querySelector('.card-confirm');
+      if (!buyBtn || !options || !confirmBtn) return;
+
+      buyBtn.addEventListener('click', function () {
+        var willOpen = !options.classList.contains('is-open');
+        options.classList.toggle('is-open', willOpen);
+        buyBtn.classList.toggle('is-open', willOpen);
+        buyBtn.textContent = willOpen ? 'Fechar' : 'Comprar';
+        if (willOpen) {
+          setTimeout(function () {
+            options.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 150);
+        }
+      });
 
       var swatches = card.querySelectorAll('.swatch');
       swatches.forEach(function (sw) {
@@ -248,7 +262,7 @@
         });
       });
 
-      buyBtn.addEventListener('click', function () {
+      confirmBtn.addEventListener('click', function () {
         var h3 = card.querySelector('.card-body h3');
         var priceEl = card.querySelector('.card-price .now');
         if (!h3 || !priceEl) return;
@@ -276,12 +290,15 @@
           qty: 1,
         });
 
-        var original = buyBtn.textContent;
-        buyBtn.textContent = 'Adicionado ✓';
-        buyBtn.classList.add('is-added');
+        var original = confirmBtn.textContent;
+        confirmBtn.textContent = 'Adicionado ✓';
+        confirmBtn.classList.add('is-added');
         setTimeout(function () {
-          buyBtn.textContent = original;
-          buyBtn.classList.remove('is-added');
+          confirmBtn.textContent = original;
+          confirmBtn.classList.remove('is-added');
+          options.classList.remove('is-open');
+          buyBtn.classList.remove('is-open');
+          buyBtn.textContent = 'Comprar';
         }, 1300);
       });
     });
