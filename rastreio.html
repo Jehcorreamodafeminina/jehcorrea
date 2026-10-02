@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rastrear pedido — Jeh Corrêa Moda Feminina</title>
+<meta name="description" content="Acompanhe o status do seu pedido na Jeh Corrêa Moda Feminina pelo número do pedido, código de rastreio, e-mail ou CPF.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;1,500&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .track-wrap{ max-width:720px; margin:0 auto; padding:0 32px 100px; }
+  .track-tabs{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .track-tab{
+    flex:1; min-width:140px; padding:12px 10px; text-align:center; border:1px solid var(--cream-deep);
+    font-size:11.5px; letter-spacing:.5px; text-transform:uppercase; color:var(--ink-soft); background:var(--white);
+    cursor:pointer; transition:all .2s ease;
+  }
+  .track-tab.active{ border-color:var(--bronze-deep); color:var(--bronze-deep); font-weight:600; background:#FBF4EC; }
+  .track-form{ display:flex; gap:10px; margin-bottom:10px; }
+  .track-form input{
+    flex:1; padding:13px 14px; border:1px solid var(--cream-deep); background:var(--white);
+    font-size:14px; color:var(--ink); outline:none; transition:border-color .2s ease;
+  }
+  .track-form input:focus{ border-color:var(--bronze-deep); }
+  .track-hint{ font-size:12px; color:var(--ink-soft); margin-bottom:36px; }
+  .track-error{ font-size:13px; color:#B23A3A; margin-bottom:20px; display:none; }
+  .track-error.show{ display:block; }
+
+  .order-card{ border:1px solid var(--cream-deep); background:var(--white); padding:26px 28px; margin-bottom:22px; }
+  .order-card-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+  .order-num{ font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--ink); }
+  .order-date{ font-size:12px; color:var(--ink-soft); margin-top:3px; }
+  .order-total{ font-family:var(--font-display); font-size:18px; font-weight:700; color:var(--bronze-deep); text-align:right; }
+
+  .timeline{ display:flex; margin-bottom:24px; }
+  .timeline-step{ flex:1; text-align:center; position:relative; }
+  .timeline-step::before{
+    content:''; position:absolute; top:11px; left:-50%; width:100%; height:2px; background:var(--cream-deep); z-index:0;
+  }
+  .timeline-step:first-child::before{ display:none; }
+  .timeline-step.done::before{ background:var(--bronze-deep); }
+  .timeline-dot{ position:relative; z-index:1; width:24px; height:24px; border-radius:50%; background:var(--cream-deep); color:var(--white); display:flex; align-items:center; justify-content:center; margin:0 auto 8px; font-size:11px; font-weight:700; }
+  .timeline-step.done .timeline-dot{ background:var(--bronze-deep); }
+  .timeline-label{ font-size:10.5px; letter-spacing:.3px; text-transform:uppercase; color:var(--ink-soft); }
+  .timeline-step.done .timeline-label{ color:var(--ink); font-weight:600; }
+  .timeline.cancelado .timeline-dot{ background:#B23A3A !important; }
+  .timeline-cancel-msg{ text-align:center; font-size:13px; color:#B23A3A; margin-bottom:20px; }
+
+  .order-tracking{ background:var(--cream-soft); border:1px solid var(--cream-deep); padding:14px 16px; margin-bottom:20px; font-size:13px; }
+  .order-tracking b{ color:var(--bronze-deep); }
+  .order-items{ border-top:1px solid var(--cream-deep); padding-top:16px; }
+  .order-item{ display:flex; justify-content:space-between; font-size:13px; padding:7px 0; color:var(--ink-soft); }
+  .order-item .nm{ color:var(--ink); }
+
+  @media (max-width:600px){ .track-tab{ min-width:auto; } }
+</style>
+</head>
+<body>
+
+<div class="announce">
+  <div class="announce-track" aria-hidden="true">
+    <span>✦ Frete grátis para todo o Brasil acima de R$299 &nbsp;&nbsp; ✦ &nbsp;&nbsp;10% OFF na primeira compra com o cupom BEMVINDA10 &nbsp;&nbsp;✦ &nbsp;&nbsp;Novidades toda semana</span>
+    <span>✦ Frete grátis para todo o Brasil acima de R$299 &nbsp;&nbsp; ✦ &nbsp;&nbsp;10% OFF na primeira compra com o cupom BEMVINDA10 &nbsp;&nbsp;✦ &nbsp;&nbsp;Novidades toda semana</span>
+  </div>
+</div>
+
+<header class="site-header" data-header>
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--bronze-deep)"/><text x="50" y="63" font-family="Manrope" font-size="38" text-anchor="middle" fill="var(--bronze-deep)">JC</text></svg>
+      <span class="brand-word">Jeh Corrêa<small>Moda Feminina</small></span>
+    </a>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="index.html#novidades">Novidades</a>
+      <a href="colecao.html">Coleção</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" aria-label="Sacola de compras" data-cart-open>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="bag-count">0</span>
+      </button>
+      <button class="menu-toggle" data-menu-toggle aria-label="Abrir menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-links mobile-nav" data-mobile-nav aria-label="Navegação móvel">
+    <a href="index.html#novidades">Novidades</a>
+    <a href="colecao.html">Coleção</a>
+    <a href="sobre.html">Sobre</a>
+    <a href="contato.html">Contato</a>
+  </nav>
+</header>
+
+<main>
+  <div class="page-hero">
+    <div class="eyebrow reveal" style="justify-content:center;">Onde está meu pedido</div>
+    <h1 class="reveal">Rastrear pedido</h1>
+  </div>
+
+  <div class="track-wrap">
+    <div class="track-tabs">
+      <button type="button" class="track-tab active" data-tab="pedido">Número do pedido</button>
+      <button type="button" class="track-tab" data-tab="correios">Código de rastreio</button>
+      <button type="button" class="track-tab" data-tab="busca">E-mail ou CPF</button>
+    </div>
+    <form class="track-form" id="track-form">
+      <input type="text" id="track-input" placeholder="Ex: JC-ABC123">
+      <button type="submit" class="btn btn-fill">Buscar</button>
+    </form>
+    <p class="track-hint" id="track-hint">Digite o número do pedido que você recebeu por e-mail (com ou sem o #).</p>
+    <p class="track-error" id="track-error"></p>
+
+    <div id="track-results"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div><div class="footer-brand">Jeh Corrêa</div><p class="footer-tag">Moda feminina em pequenos lotes, pensada para durar mais do que uma estação. Vista a sua essência.</p><div class="payments"><span>Pix</span><span>Cartão</span><span>Boleto</span></div></div>
+    <div><h4>Loja</h4><ul><li><a href="colecao.html">Coleção atual</a></li><li><a href="index.html#mais-vendidas">Mais vendidas</a></li><li><a href="colecao.html">Guia de medidas</a></li></ul></div>
+    <div><h4>Institucional</h4><ul><li><a href="sobre.html">Sobre a marca</a></li><li><a href="sobre.html">O ateliê</a></li><li><a href="contato.html">Trabalhe conosco</a></li></ul></div>
+    <div><h4>Atendimento</h4><ul><li><a href="politica-de-trocas-e-devolucoes.html">Trocas e devoluções</a></li><li><a href="politica-de-entrega.html">Política de entrega</a></li><li><a href="politica-de-privacidade.html">Política de privacidade</a></li><li><a href="contato.html">Fale conosco</a></li><li><a href="rastreio.html">Rastrear pedido</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>Jeh Corrêa Moda Feminina © 2026 — todos os direitos reservados. Fotos, textos e valores deste site são ilustrativos: modelo em construção, em breve com conteúdo real da loja.</p>
+    <div class="socials">
+      <a href="https://instagram.com/jehcorrea_modafeminina" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg></a>
+      <a href="https://wa.me/5500000000000" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2z"/></svg></a>
+      <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 3v11.5a3.5 3.5 0 1 1-3-3.46M14 3a5 5 0 0 0 5 5"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/main.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  var HINTS = {
+    pedido: 'Digite o número do pedido que você recebeu por e-mail (com ou sem o #).',
+    correios: 'Digite o código de rastreio dos Correios (vem no e-mail de envio).',
+    busca: 'Digite o e-mail ou CPF usado na compra para ver todos os seus pedidos.',
+  };
+  var PLACEHOLDERS = {
+    pedido: 'Ex: JC-ABC123',
+    correios: 'Ex: AB123456789BR',
+    busca: 'seu@email.com ou 000.000.000-00',
+  };
+  var STATUS_STEPS = ['novo', 'processando', 'enviado', 'entregue'];
+  var STATUS_LABELS = { novo: 'Recebido', processando: 'Em preparação', enviado: 'Enviado', entregue: 'Entregue' };
+
+  var tipo = 'pedido';
+  var tabs = document.querySelectorAll('.track-tab');
+  var input = document.getElementById('track-input');
+  var hint = document.getElementById('track-hint');
+  var errorEl = document.getElementById('track-error');
+  var resultsEl = document.getElementById('track-results');
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      tipo = tab.getAttribute('data-tab');
+      hint.textContent = HINTS[tipo];
+      input.placeholder = PLACEHOLDERS[tipo];
+      input.type = tipo === 'busca' ? 'text' : 'text';
+    });
+  });
+
+  function fmt(v) { return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function fmtDate(iso) {
+    if (!iso) return '';
+    try { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }); }
+    catch (e) { return ''; }
+  }
+
+  function renderPedido(p) {
+    var cancelado = p.status === 'cancelado';
+    var stepIdx = STATUS_STEPS.indexOf(p.status);
+    var timelineHtml = cancelado
+      ? '<p class="timeline-cancel-msg">Este pedido foi cancelado.</p>'
+      : '<div class="timeline">' + STATUS_STEPS.map(function (s, i) {
+          var done = i <= stepIdx;
+          return '<div class="timeline-step' + (done ? ' done' : '') + '">' +
+            '<div class="timeline-dot">' + (done ? '✓' : (i + 1)) + '</div>' +
+            '<div class="timeline-label">' + STATUS_LABELS[s] + '</div>' +
+            '</div>';
+        }).join('') + '</div>';
+
+    var trackingHtml = '';
+    if (p.codigoRastreio) {
+      trackingHtml = '<div class="order-tracking">Código de rastreio: <b>' + p.codigoRastreio + '</b>' +
+        (p.transportadora ? ' · ' + p.transportadora : '') + '</div>';
+    } else if (p.pagamento === 'pix' && !p.pagamentoConfirmado) {
+      trackingHtml = '<div class="order-tracking">Aguardando confirmação do pagamento via Pix.</div>';
+    } else if (p.pagamento === 'boleto' && !p.pagamentoConfirmado) {
+      trackingHtml = '<div class="order-tracking">Aguardando compensação do boleto' + (p.vencimento ? ' (vence em ' + fmtDate(p.vencimento) + ')' : '') + '.</div>';
+    }
+
+    var itemsHtml = (p.itens || []).map(function (i) {
+      var variante = [i.variante ? 'Tam. ' + i.variante : null].filter(Boolean).join(' · ');
+      return '<div class="order-item"><span class="nm">' + (i.nome || '') + (variante ? ' <span style="color:var(--ink-soft);">(' + variante + ')</span>' : '') + ' × ' + (i.qty || 1) + '</span><span>' + fmt((i.preco || 0) * (i.qty || 1)) + '</span></div>';
+    }).join('');
+
+    return (
+      '<div class="order-card">' +
+      '<div class="order-card-head">' +
+      '<div><div class="order-num">Pedido ' + (p.numeroPedido || '') + '</div><div class="order-date">' + fmtDate(p.criadoEm) + (p.primeiroNome ? ' · ' + p.primeiroNome : '') + '</div></div>' +
+      '<div class="order-total">' + fmt(p.total) + '</div>' +
+      '</div>' +
+      timelineHtml +
+      trackingHtml +
+      (itemsHtml ? '<div class="order-items">' + itemsHtml + '</div>' : '') +
+      '</div>'
+    );
+  }
+
+  document.getElementById('track-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var valor = input.value.trim();
+    errorEl.classList.remove('show');
+    resultsEl.innerHTML = '';
+    if (!valor) { errorEl.textContent = 'Digite um valor para buscar.'; errorEl.classList.add('show'); return; }
+
+    var btn = e.target.querySelector('button[type="submit"]');
+    var original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Buscando...';
+
+    try {
+      var resp = await fetch('/api/rastreio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: tipo, valor: valor }),
+      });
+      var data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Não foi possível buscar o pedido.');
+      if (!data.pedidos || !data.pedidos.length) {
+        errorEl.textContent = 'Não encontramos nenhum pedido com esse dado. Confira se digitou certo, ou fale com a gente pelo WhatsApp.';
+        errorEl.classList.add('show');
+      } else {
+        resultsEl.innerHTML = data.pedidos.map(renderPedido).join('');
+      }
+    } catch (err) {
+      errorEl.textContent = 'Não foi possível buscar agora. Tente de novo em instantes ou fale com a gente pelo WhatsApp.';
+      errorEl.classList.add('show');
+    }
+    btn.disabled = false;
+    btn.textContent = original;
+  });
+})();
+</script>
+</body>
+</html>
