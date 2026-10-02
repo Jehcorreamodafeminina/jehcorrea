@@ -16,7 +16,6 @@ const firebaseConfig = {
   messagingSenderId: "COLE_AQUI_SEU_MESSAGING_SENDER_ID",
   appId: "COLE_AQUI_SEU_APP_ID"
 };
-const WA_NUMBER = "5500000000000";
 
 function withTimeout(promise, ms) {
   return Promise.race([
@@ -34,10 +33,6 @@ function slugify(s) {
 function catSlug(categoria) { return slugify(categoria); }
 
 function brl(v) { return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-
-function waIcon() {
-  return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.4 1.4-2 1.5-.5.1-1.1.2-3.6-.9-3-1.3-4.9-4.4-5.1-4.6-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.8 1.9.8 2 .1.2.1.4 0 .6-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.4.3-.2.7.2.4 1 1.6 2.1 2.6 1.4 1.3 2.6 1.7 3 1.9.4.2.6.1.8-.1.2-.3.9-1 1.1-1.3.2-.3.5-.3.8-.2.3.1 1.7.8 2 1 .3.1.5.2.6.3.1.2.1.9-.1 1.5z"/></svg>';
-}
 
 function cardHtml(p) {
   const nome = p.nome || '';
@@ -59,7 +54,6 @@ function cardHtml(p) {
   const sizes = tamanhos.map(t =>
     `<button type="button" class="size-chip" data-size="${t}">${t}</button>`
   ).join('');
-  const wa = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent('Oi! Tenho interesse no ' + nome);
 
   return (
     `<article class="card" data-category="${catSlug(p.categoria)}">` +
@@ -77,7 +71,6 @@ function cardHtml(p) {
     (estoqueEsgotado
       ? '<button type="button" class="card-buy" disabled style="opacity:.5;cursor:not-allowed;">Esgotado</button>'
       : '<button type="button" class="card-buy" data-toggle-options>Comprar</button>') +
-    `<a class="card-whats" href="${wa}" target="_blank" rel="noopener">${waIcon()}<span>Atendimento no Whats</span></a>` +
     '<div class="card-options">' +
     (cores.length ? `<div class="card-colors"><span class="field-label">Cores</span><div class="swatch-row" role="group" aria-label="Cores disponíveis para ${nome}">${swatches}</div></div>` : '') +
     (tamanhos.length ? `<div class="card-sizes"><span class="field-label">Tamanho</span><div class="size-row" role="group" aria-label="Tamanhos disponíveis para ${nome}">${sizes}</div></div>` : '') +

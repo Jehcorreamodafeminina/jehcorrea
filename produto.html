@@ -424,7 +424,6 @@ function renderRelatedCard(p) {
   var sizes = tamanhos.map(function (t) {
     return '<button type="button" class="size-chip" data-size="' + t + '">' + t + '</button>';
   }).join('');
-  var wa = 'https://wa.me/5500000000000?text=' + encodeURIComponent('Oi! Tenho interesse no ' + nome);
   return (
     '<article class="card reveal is-visible">' +
     '<a class="card-media" href="produto.html?slug=' + slug + '" aria-label="Ver ' + nome + '">' +
@@ -437,10 +436,6 @@ function renderRelatedCard(p) {
     '<div class="card-price"><span class="now">' + brl(preco) + '</span></div>' +
     '<div class="card-avista">' + brl(avista) + ' no Pix</div>' +
     '<button type="button" class="card-buy" data-toggle-options>Comprar</button>' +
-    '<a class="card-whats" href="' + wa + '" target="_blank" rel="noopener">' +
-    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.4 1.4-2 1.5-.5.1-1.1.2-3.6-.9-3-1.3-4.9-4.4-5.1-4.6-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.5.8 1.9.8 2 .1.2.1.4 0 .6-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.4.3-.2.7.2.4 1 1.6 2.1 2.6 1.4 1.3 2.6 1.7 3 1.9.4.2.6.1.8-.1.2-.3.9-1 1.1-1.3.2-.3.5-.3.8-.2.3.1 1.7.8 2 1 .3.1.5.2.6.3.1.2.1.9-.1 1.5z"/></svg>' +
-    '<span>Atendimento no Whats</span>' +
-    '</a>' +
     '<div class="card-options">' +
     (cores.length ? '<div class="card-colors"><span class="field-label">Cores</span><div class="swatch-row">' + swatches + '</div></div>' : '') +
     (tamanhos.length ? '<div class="card-sizes"><span class="field-label">Tamanho</span><div class="size-row">' + sizes + '</div></div>' : '') +
