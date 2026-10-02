@@ -28,6 +28,33 @@
   .co-field .err{ font-size:11px; color:#B23A3A; margin-top:5px; display:none; }
   .co-field.invalid input, .co-field.invalid select{ border-color:#B23A3A; }
   .co-field.invalid .err{ display:block; }
+  .co-field.cep-field{ position:relative; }
+  .co-field.cep-field .cep-spinner{ position:absolute; right:12px; top:34px; font-size:11px; color:var(--ink-soft); display:none; }
+  .co-field.cep-field.is-loading .cep-spinner{ display:block; }
+
+  .toast{
+    position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(20px); z-index:200;
+    background:var(--ink); color:var(--white); padding:13px 22px; border-radius:8px; font-size:13px;
+    max-width:90vw; text-align:center; opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+    box-shadow:0 14px 30px -10px rgba(0,0,0,.35);
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .shipping-section{ margin-top:4px; }
+  .shipping-loading{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-soft); padding:14px 0; }
+  .shipping-options{ display:flex; flex-direction:column; gap:10px; }
+  .shipping-option{
+    display:flex; align-items:center; gap:12px; padding:13px 14px; border:1px solid var(--cream-deep);
+    cursor:pointer; transition:border-color .2s ease, background .2s ease;
+  }
+  .shipping-option:hover{ border-color:var(--ink-soft); }
+  .shipping-option.selected{ border-color:var(--bronze-deep); background:#FBF4EC; }
+  .shipping-option input{ margin:0; accent-color:var(--bronze-deep); }
+  .shipping-info{ flex:1; }
+  .shipping-name{ font-size:13px; font-weight:600; color:var(--ink); }
+  .shipping-desc{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  .shipping-price{ font-size:13px; font-weight:600; color:var(--ink); white-space:nowrap; }
+  .shipping-price.free{ color:#1F6B41; }
 
   .pay-methods{ display:flex; gap:10px; margin-bottom:20px; }
   .pay-method{
@@ -88,6 +115,7 @@
 <main>
 <div id="checkout-content"></div>
 </main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <footer class="footer">
   <div class="footer-bottom" style="max-width:var(--container);margin:0 auto;padding:30px 32px;">
@@ -132,10 +160,25 @@ if (!itens.length) {
 
 function fmt(v){ return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
 
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3200);
+}
+function showFieldError(id, msg){
+  document.getElementById('field-' + id)?.classList.add('invalid');
+  const err = document.getElementById('err-' + id);
+  if (err) err.textContent = msg;
+}
+function clearFieldError(id){
+  document.getElementById('field-' + id)?.classList.remove('invalid');
+}
+
 function montarCheckout(){
   const subtotal = cart.getTotal();
-  const frete = subtotal >= FRETE_GRATIS_ACIMA_DE ? 0 : FRETE_PADRAO;
-  const total = subtotal + frete;
+  const state = { subtotal, frete: 0, freteNome: null, shippingSelected: null, total: subtotal };
 
   content.innerHTML = `
   <div class="checkout-wrap">
@@ -150,29 +193,34 @@ function montarCheckout(){
         <div class="co-card">
           <h2>👤 Seus dados</h2>
           <div class="co-grid">
-            <div class="co-field"><label for="f-nome">Nome completo</label><input type="text" id="f-nome" required></div>
-            <div class="co-field"><label for="f-email">E-mail</label><input type="email" id="f-email" required></div>
+            <div class="co-field" id="field-f-nome"><label for="f-nome">Nome completo</label><input type="text" id="f-nome" autocomplete="name"><span class="err" id="err-f-nome"></span></div>
+            <div class="co-field" id="field-f-email"><label for="f-email">E-mail</label><input type="email" id="f-email" autocomplete="email"><span class="err" id="err-f-email"></span></div>
           </div>
           <div class="co-grid">
-            <div class="co-field"><label for="f-telefone">Telefone / WhatsApp</label><input type="tel" id="f-telefone" placeholder="(00) 00000-0000" required></div>
-            <div class="co-field"><label for="f-cpf">CPF</label><input type="text" id="f-cpf" placeholder="000.000.000-00" required></div>
+            <div class="co-field" id="field-f-telefone"><label for="f-telefone">Telefone / WhatsApp</label><input type="tel" id="f-telefone" placeholder="(00) 00000-0000" autocomplete="tel"><span class="err" id="err-f-telefone"></span></div>
+            <div class="co-field" id="field-f-cpf"><label for="f-cpf">CPF</label><input type="text" id="f-cpf" placeholder="000.000.000-00"><span class="err" id="err-f-cpf"></span></div>
           </div>
         </div>
 
         <div class="co-card">
           <h2>📦 Endereço de entrega</h2>
           <div class="co-grid three">
-            <div class="co-field"><label for="f-cep">CEP</label><input type="text" id="f-cep" placeholder="00000-000" required></div>
-            <div class="co-field" style="grid-column:span 2;"><label for="f-rua">Rua</label><input type="text" id="f-rua" required></div>
+            <div class="co-field cep-field" id="field-f-cep"><label for="f-cep">CEP</label><input type="text" id="f-cep" placeholder="00000-000" autocomplete="postal-code" inputmode="numeric"><span class="cep-spinner">buscando...</span><span class="err" id="err-f-cep"></span></div>
+            <div class="co-field" style="grid-column:span 2;" id="field-f-rua"><label for="f-rua">Rua</label><input type="text" id="f-rua" autocomplete="address-line1"><span class="err" id="err-f-rua"></span></div>
           </div>
           <div class="co-grid three">
-            <div class="co-field"><label for="f-numero">Número</label><input type="text" id="f-numero" required></div>
-            <div class="co-field"><label for="f-complemento">Complemento</label><input type="text" id="f-complemento"></div>
-            <div class="co-field"><label for="f-bairro">Bairro</label><input type="text" id="f-bairro" required></div>
+            <div class="co-field" id="field-f-numero"><label for="f-numero">Número</label><input type="text" id="f-numero"><span class="err" id="err-f-numero"></span></div>
+            <div class="co-field"><label for="f-complemento">Complemento</label><input type="text" id="f-complemento" autocomplete="address-line2"></div>
+            <div class="co-field" id="field-f-bairro"><label for="f-bairro">Bairro</label><input type="text" id="f-bairro"><span class="err" id="err-f-bairro"></span></div>
           </div>
           <div class="co-grid">
-            <div class="co-field"><label for="f-cidade">Cidade</label><input type="text" id="f-cidade" required></div>
-            <div class="co-field"><label for="f-uf">Estado (UF)</label><input type="text" id="f-uf" maxlength="2" placeholder="SP" required></div>
+            <div class="co-field" id="field-f-cidade"><label for="f-cidade">Cidade</label><input type="text" id="f-cidade" autocomplete="address-level2"><span class="err" id="err-f-cidade"></span></div>
+            <div class="co-field"><label for="f-uf">Estado (UF)</label><input type="text" id="f-uf" maxlength="2" placeholder="SP" autocomplete="address-level1"></div>
+          </div>
+          <div class="shipping-section" id="shipping-section" hidden>
+            <label class="form-label" style="display:block; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px;">Forma de envio</label>
+            <div class="shipping-loading" id="shipping-loading"><span>Calculando opções de frete…</span></div>
+            <div class="shipping-options" id="shipping-options"></div>
           </div>
         </div>
 
@@ -195,7 +243,7 @@ function montarCheckout(){
           </div>
         </div>
 
-        <button type="submit" class="btn btn-fill" id="btn-finalizar" style="width:100%;justify-content:center;">Finalizar compra — ${fmt(total)}</button>
+        <button type="submit" class="btn btn-fill" id="btn-finalizar" style="width:100%;justify-content:center;">Finalizar compra — ${fmt(subtotal)}</button>
         <p style="font-size:11px;color:var(--ink-soft);text-align:center;margin-top:12px;">Pagamento processado com segurança pelo Mercado Pago. Não armazenamos dados do seu cartão.</p>
       </form>
     </div>
@@ -204,21 +252,150 @@ function montarCheckout(){
       <h2>Resumo do pedido</h2>
       ${itens.map(i => `
         <div class="summary-item">
-          <div><div class="nm">${i.nome}</div>${i.tamanho ? `<span class="meta">Tamanho ${i.tamanho} · qtd ${i.qty}</span>` : `<span class="meta">qtd ${i.qty}</span>`}</div>
+          <div><div class="nm">${i.nome}</div>${[i.tamanho ? 'Tamanho ' + i.tamanho : null, i.cor ? 'Cor ' + i.cor : null].filter(Boolean).join(' · ') ? `<span class="meta">${[i.tamanho ? 'Tamanho ' + i.tamanho : null, i.cor ? 'Cor ' + i.cor : null].filter(Boolean).join(' · ')} · qtd ${i.qty}</span>` : `<span class="meta">qtd ${i.qty}</span>`}</div>
           <div>${fmt(i.preco * i.qty)}</div>
         </div>`).join('')}
-      <div class="summary-row"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
-      <div class="summary-row"><span>Frete</span><span>${frete === 0 ? 'Grátis' : fmt(frete)}</span></div>
-      <div class="summary-total"><span>Total</span><b>${fmt(total)}</b></div>
+      <div class="summary-row"><span>Subtotal</span><span id="s-subtotal">${fmt(subtotal)}</span></div>
+      <div class="summary-row"><span>Frete</span><span id="s-frete">Selecione o CEP</span></div>
+      <div class="summary-total"><span>Total</span><b id="s-total">${fmt(subtotal)}</b></div>
     </aside>
   </div>`;
 
-  wireForm(subtotal, frete, total);
+  wireForm(state);
 }
 
-function wireForm(subtotal, frete, total){
+function wireForm(state){
   let metodoPagamento = 'pix';
   let cardBrickController = null;
+
+  function updateTotals(){
+    state.total = state.subtotal + state.frete;
+    document.getElementById('s-frete').textContent = state.shippingSelected ? (state.frete === 0 ? 'Grátis' : fmt(state.frete)) : 'Selecione o CEP';
+    document.getElementById('s-total').textContent = fmt(state.total);
+    const btn = document.getElementById('btn-finalizar');
+    if (btn) btn.textContent = 'Finalizar compra — ' + fmt(state.total);
+  }
+
+  function refreshCardBrickAmount(){
+    if (cardBrickController) {
+      try { cardBrickController.unmount(); } catch (e) {}
+      cardBrickController = null;
+      montarCardBrick();
+    }
+  }
+
+  window.selectShipping = function (id, preco, nome, desc){
+    state.shippingSelected = { id, preco, nome, desc };
+    state.frete = preco;
+    document.querySelectorAll('.shipping-option').forEach(el => el.classList.remove('selected'));
+    document.getElementById('ship-' + id)?.classList.add('selected');
+    updateTotals();
+    refreshCardBrickAmount();
+  };
+
+  function calcularFrete(){
+    const section = document.getElementById('shipping-section');
+    const loading = document.getElementById('shipping-loading');
+    const options = document.getElementById('shipping-options');
+    section.hidden = false;
+    loading.style.display = 'flex';
+    options.innerHTML = '';
+
+    const subtotal = state.subtotal;
+    setTimeout(() => {
+      loading.style.display = 'none';
+      const fretes = [
+        { id: 'padrao', nome: 'Entrega padrão', desc: 'Prazo: 5 a 8 dias úteis', preco: subtotal >= FRETE_GRATIS_ACIMA_DE ? 0 : FRETE_PADRAO },
+        { id: 'expressa', nome: 'Entrega expressa', desc: 'Prazo: 1 a 3 dias úteis', preco: subtotal >= FRETE_GRATIS_ACIMA_DE ? 14.90 : FRETE_PADRAO + 14.90 },
+      ];
+      options.innerHTML = fretes.map(f => `
+        <label class="shipping-option" id="ship-${f.id}">
+          <input type="radio" name="frete" value="${f.id}" onchange="selectShipping('${f.id}', ${f.preco}, '${f.nome}', '${f.desc}')">
+          <div class="shipping-info">
+            <div class="shipping-name">${f.nome}</div>
+            <div class="shipping-desc">${f.desc}</div>
+          </div>
+          <div class="${f.preco === 0 ? 'shipping-price free' : 'shipping-price'}">${f.preco === 0 ? 'Grátis' : fmt(f.preco)}</div>
+        </label>`).join('');
+      const first = options.querySelector('input[type="radio"]');
+      if (first) { first.checked = true; first.dispatchEvent(new Event('change')); }
+    }, 700);
+  }
+
+  /* ── CEP via ViaCEP (gratuito, sem chave de API) ── */
+  const cepInput = document.getElementById('f-cep');
+  cepInput.addEventListener('input', () => {
+    let v = cepInput.value.replace(/\D/g, '').slice(0, 8);
+    if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5);
+    cepInput.value = v;
+  });
+  cepInput.addEventListener('blur', async () => {
+    const cep = cepInput.value.replace(/\D/g, '');
+    if (cep.length !== 8) { if (cep.length) showFieldError('f-cep', 'CEP inválido'); return; }
+    clearFieldError('f-cep');
+    const field = document.getElementById('field-f-cep');
+    field.classList.add('is-loading');
+    try {
+      const resp = await fetch('https://viacep.com.br/ws/' + cep + '/json/');
+      const data = await resp.json();
+      if (data.erro) { showFieldError('f-cep', 'CEP não encontrado'); field.classList.remove('is-loading'); return; }
+      document.getElementById('f-rua').value = data.logradouro || '';
+      document.getElementById('f-bairro').value = data.bairro || '';
+      document.getElementById('f-cidade').value = data.localidade || '';
+      document.getElementById('f-uf').value = data.uf || '';
+      clearFieldError('f-rua'); clearFieldError('f-bairro'); clearFieldError('f-cidade');
+      document.getElementById('f-numero').focus();
+      calcularFrete();
+    } catch (e) {
+      toast('Não foi possível buscar o CEP — preencha o endereço manualmente.');
+    }
+    field.classList.remove('is-loading');
+  });
+
+  /* ── validação ao sair do campo (blur), não a cada tecla ── */
+  const camposValidar = [
+    { id: 'f-nome', check: v => v.trim().length >= 3, msg: 'Informe seu nome completo' },
+    { id: 'f-email', check: v => /\S+@\S+\.\S+/.test(v), msg: 'E-mail inválido' },
+    { id: 'f-telefone', check: v => v.replace(/\D/g, '').length >= 10, msg: 'Telefone inválido' },
+    { id: 'f-cpf', check: v => v.replace(/\D/g, '').length === 11, msg: 'CPF inválido' },
+    { id: 'f-cep', check: v => v.replace(/\D/g, '').length === 8, msg: 'CEP inválido' },
+    { id: 'f-rua', check: v => v.trim().length >= 3, msg: 'Informe a rua' },
+    { id: 'f-numero', check: v => v.trim().length >= 1, msg: 'Informe o número' },
+    { id: 'f-bairro', check: v => v.trim().length >= 2, msg: 'Informe o bairro' },
+    { id: 'f-cidade', check: v => v.trim().length >= 2, msg: 'Informe a cidade' },
+  ];
+  camposValidar.forEach(c => {
+    const el = document.getElementById(c.id);
+    if (!el) return;
+    el.addEventListener('blur', () => {
+      if (!el.value.trim()) { clearFieldError(c.id); return; } // obrigatoriedade é checada só no submit
+      if (c.check(el.value)) clearFieldError(c.id); else showFieldError(c.id, c.msg);
+    });
+  });
+
+  function validarFormulario(){
+    let firstInvalid = null;
+    camposValidar.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (!el) return;
+      if (!c.check(el.value)) {
+        showFieldError(c.id, c.msg);
+        if (!firstInvalid) firstInvalid = { el, msg: c.msg };
+      } else clearFieldError(c.id);
+    });
+    if (firstInvalid) {
+      toast(firstInvalid.msg);
+      firstInvalid.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => firstInvalid.el.focus({ preventScroll: true }), 400);
+      return false;
+    }
+    if (!state.shippingSelected) {
+      toast('Selecione uma forma de envio');
+      document.getElementById('shipping-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+    return true;
+  }
 
   document.querySelectorAll('.pay-method').forEach(el => {
     el.addEventListener('click', () => {
@@ -236,7 +413,7 @@ function wireForm(subtotal, frete, total){
     const mp = new window.MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
     const bricksBuilder = mp.bricks();
     cardBrickController = await bricksBuilder.create('cardPayment', 'cardPaymentBrick_container', {
-      initialization: { amount: total },
+      initialization: { amount: state.total },
       callbacks: {
         onReady: () => {},
         onSubmit: (cardFormData) => new Promise((resolve, reject) => {
@@ -249,11 +426,14 @@ function wireForm(subtotal, frete, total){
 
   document.getElementById('co-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!validarFormulario()) return;
     if (metodoPagamento === 'cartao') return; // o próprio Brick chama onSubmit
     try { await finalizarPedido(metodoPagamento, null); } catch (e) { /* já mostrado ao usuário acima */ }
   });
 
   async function finalizarPedido(metodo, cardFormData){
+    if (!validarFormulario()) throw new Error('Confira os dados preenchidos antes de continuar.');
+
     const btn = document.getElementById('btn-finalizar');
     btn.disabled = true;
     btn.textContent = 'Processando...';
@@ -287,7 +467,7 @@ function wireForm(subtotal, frete, total){
           body: JSON.stringify({
             idempotencyKey,
             body: {
-              transaction_amount: Number(total.toFixed(2)),
+              transaction_amount: Number(state.total.toFixed(2)),
               description: 'Pedido ' + numeroPedido + ' — Jeh Corrêa',
               payment_method_id: 'pix',
               payer: { email: cliente.email, first_name: cliente.nome.split(' ')[0], identification: { type: 'CPF', number: cliente.cpf.replace(/\D/g, '') } },
@@ -306,7 +486,7 @@ function wireForm(subtotal, frete, total){
           body: JSON.stringify({
             idempotencyKey,
             body: {
-              transaction_amount: Number(total.toFixed(2)),
+              transaction_amount: Number(state.total.toFixed(2)),
               description: 'Pedido ' + numeroPedido + ' — Jeh Corrêa',
               payment_method_id: 'bolbradesco',
               date_of_expiration: vencimento,
@@ -328,7 +508,7 @@ function wireForm(subtotal, frete, total){
           body: JSON.stringify({
             idempotencyKey,
             body: {
-              transaction_amount: Number(total.toFixed(2)),
+              transaction_amount: Number(state.total.toFixed(2)),
               token: cardFormData.token,
               description: 'Pedido ' + numeroPedido + ' — Jeh Corrêa',
               installments: cardFormData.installments,
@@ -359,9 +539,9 @@ function wireForm(subtotal, frete, total){
       pagamentoConfirmado: mercadoPago.status === 'approved',
       pagamentoConfirmadoEm: mercadoPago.status === 'approved' ? new Date().toISOString() : null,
       mercadoPago, vencimento: vencimento || null,
-      cliente, itens: itens.map(i => ({ nome: i.nome, variante: i.tamanho, preco: i.preco, qty: i.qty, sku: i.sku })),
-      frete: { nome: frete === 0 ? 'Grátis' : 'Padrão', valor: frete },
-      total: Number(total.toFixed(2)),
+      cliente, itens: itens.map(i => ({ nome: i.nome, variante: i.tamanho, cor: i.cor || null, preco: i.preco, qty: i.qty, sku: i.sku })),
+      frete: { nome: state.shippingSelected ? state.shippingSelected.nome : 'Padrão', valor: state.frete },
+      total: Number(state.total.toFixed(2)),
     };
     try { await addDoc(collection(db, 'pedidos'), pedido); } catch (e) { console.error('Erro ao salvar pedido no Firestore:', e); }
 
