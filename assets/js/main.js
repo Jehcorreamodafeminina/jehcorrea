@@ -159,16 +159,18 @@
     });
   }
 
-  /* ---------- product filters ---------- */
+  /* ---------- product filters ----------
+     consulta os cards de novo a cada clique (em vez de guardar a lista
+     uma única vez) porque a vitrine pode ser substituída depois do load
+     inicial, quando os produtos reais do Firestore chegam ---------- */
   var pills = document.querySelectorAll("[data-filter]");
-  var cards = document.querySelectorAll("[data-category]");
-  if (pills.length && cards.length) {
+  if (pills.length) {
     pills.forEach(function (pill) {
       pill.addEventListener("click", function () {
         pills.forEach(function (p) { p.classList.remove("active"); });
         pill.classList.add("active");
         var filter = pill.getAttribute("data-filter");
-        cards.forEach(function (card) {
+        document.querySelectorAll("[data-category]").forEach(function (card) {
           var show = filter === "todos" || card.getAttribute("data-category") === filter;
           card.style.display = show ? "" : "none";
         });
